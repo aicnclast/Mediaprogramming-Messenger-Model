@@ -1,7 +1,13 @@
 package de.sb.messenger.persistence;
 
 public class Name {
+	@Valid
+	@NotNull(message = "Name cannot be empty")  //Example Message
+	@Size(min=1, max=31)
 	private String given; //modfizierbar
+	@Valid
+	@NotNull
+	@Size(min=1, max=31)
 	private String family; //modifizierbar
 	
 	
