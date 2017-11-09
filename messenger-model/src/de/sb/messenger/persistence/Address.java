@@ -1,10 +1,22 @@
 package de.sb.messenger.persistence;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 public class Address {
+	@Size(min=0, max=63)
+	@Valid
 	private String street; // modifizierbar
-	private String postcode; // modifizierbar
-	private String city; //modifizierbar
 	
+	
+	@Valid
+	@Size(min=0, max=15)
+	@Pattern(regexp = "[0-9]")
+	private String postcode; // modifizierbar
+	
+	@NotNull
+	@Size(min=1, max=63)
+	@Valid
+	private String city; //modifizierbar
 	
 	public Address(){	//package private wenn ... 
 	}
