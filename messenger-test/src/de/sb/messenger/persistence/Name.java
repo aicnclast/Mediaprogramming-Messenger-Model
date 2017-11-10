@@ -1,4 +1,4 @@
-package de.sb.messenger.entity;
+package de.sb.messenger.persistence;
 
 public class Name {
 	private String given; //modfizierbar

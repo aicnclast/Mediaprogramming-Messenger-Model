@@ -1,4 +1,4 @@
-package de.sb.messenger.entity;
+package de.sb.messenger.persistence;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -16,7 +16,7 @@ public class Person extends BaseEntity {
 	private final Name name; //(nicht) modifizierbar
 	private final Address address; // (nicht) modifizierbar 
 	private Document avatar;  //(nicht) modifizierbar
-	private final Set <Message> messageAuthored; //Design Pattern: Brücke
+	private final Set <Message> messageAuthored; //Design Pattern: Brï¿½cke
 	private final Set <Person> personObserved;
 	private final Set <Person> personObserving; //Mengenrelation: Nicht modifizierbar
 	

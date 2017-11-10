@@ -1,4 +1,4 @@
-package de.sb.messenger.entity;
+package de.sb.messenger.persistence;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -25,7 +25,7 @@ public class Document extends BaseEntity {
 	
 	
 	public Document() {
-		this.setContentType("text/text"); //default für allgemeine byte-Arrays
+		this.setContentType("text/text"); //default fï¿½r allgemeine byte-Arrays
 		this.content = defaultContent; //annotations 
 		this.contentHash = defaultMediaHash;
 			

@@ -1,6 +1,5 @@
 package de.sb.messenger.persistence;
 
-import de.sb.messenger.entity.BaseEntity;
 import static java.util.logging.Level.WARNING;
 import java.util.HashSet;
 import java.util.Set;

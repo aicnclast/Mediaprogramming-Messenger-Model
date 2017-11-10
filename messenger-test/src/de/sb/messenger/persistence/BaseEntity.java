@@ -1,4 +1,4 @@
-package de.sb.messenger.entity;
+package de.sb.messenger.persistence;
 
 import java.util.ArrayList;
 import java.util.Collections;
