@@ -8,8 +8,14 @@ public class Document extends BaseEntity {
 	//wie passwordhash
 	static private final byte[] defaultContent = new byte [0];
 	static private final byte[] defaultMediaHash = mediaHash(defaultContent);
+	@NotNull
+	@Size(min=32, max=32)
 	private byte[] contentHash; //
+	@NotNull
+	@Size(min=1, max=63)
 	private String contentType; // modifizierbar
+	@NotNull
+	@Size(min=1, max=16777215)
 	private byte [] content; // modifizierbar 
 
 	static public byte[] mediaHash (byte [] content)  {
@@ -25,7 +31,7 @@ public class Document extends BaseEntity {
 	
 	
 	public Document() {
-		this.setContentType("text/text"); //default für allgemeine byte-Arrays
+		this.setContentType("text/text"); //default fÃ¼r allgemeine byte-Arrays
 		this.content = defaultContent; //annotations 
 		this.contentHash = defaultMediaHash;
 			

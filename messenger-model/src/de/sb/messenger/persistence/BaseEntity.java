@@ -7,8 +7,11 @@ import de.sb.messenger.persistence.*;
 
 
 public class BaseEntity implements Comparable<BaseEntity>{
+	@NotNull
 	private final long identity; // nicht modifizierbar
+	@NotNull
 	private int version; // nicht modifizierbar
+	@NotNull
 	private long creationTimestamp; // nicht modifizierbar
 	private final Set<Message> messageCaused; // ???
 	

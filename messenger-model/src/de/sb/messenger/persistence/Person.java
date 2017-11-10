@@ -7,16 +7,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 public class Person extends BaseEntity {
 	static private final byte[] defaultPasswordHash = passwordHash("");
+	@NotNull
+	@Size(min=1, max=128)
+	@Pattern(regexp = "[A-Z0-9._-]+@[A-Z0-9.-].[A-Z]")
 	private String email; //modifizierbar
+	@NotNull	
+	@Size(min=32, max=32)
 	private byte [] passwordHash; //modifizierbar (falls neues Passwort)
+	@NotNull
 	private Group group; //nicht modifizierbar
+	@NotNull
+	@Valid
 	private final Name name; //(nicht) modifizierbar
+	@NotNull
+	@Valid
 	private final Address address; // (nicht) modifizierbar 
+	@NotNull
 	private Document avatar;  //(nicht) modifizierbar
-	private final Set <Message> messageAuthored; //Design Pattern: Brücke
+	private final Set <Message> messageAuthored; //Design Pattern: BrÃ¼cke
 	private final Set <Person> personObserved;
 	private final Set <Person> personObserving; //Mengenrelation: Nicht modifizierbar
 	

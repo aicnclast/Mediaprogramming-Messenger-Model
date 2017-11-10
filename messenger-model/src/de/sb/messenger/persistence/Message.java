@@ -3,8 +3,12 @@ package de.sb.messenger.persistence;
 import java.util.ArrayList;
 
 public class Message extends BaseEntity {
+@NotNull
 private final Person author; //nicht modifizierbar
+@NotNull
 private final BaseEntity subject; // nicht modifizierbar
+@NotNull
+@Size(min=1, max=4093)
 private String body; //modifierbar
 
 protected Message(){ //zur Initialisierung
