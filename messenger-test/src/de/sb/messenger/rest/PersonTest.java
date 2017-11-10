@@ -1,12 +1,14 @@
-package de.sb.messenger.persistence;
+package de.sb.messenger.rest;
 
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import org.junit.Test;
+
 import org.junit.Assert;
+import org.junit.Test;
+import de.sb.messenger.persistence.*;
 
 public class PersonTest extends EntityTest {
 	Person entity;
@@ -14,7 +16,7 @@ public class PersonTest extends EntityTest {
 	@Test
 	public void testConstraints(){
 		Validator validator = this.getEntityValidatorFactory().getValidator();
-		entity = new Person();
+		entity = new Person(new Document());
 		
 		//Test if initial state has no errors
 		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(entity);

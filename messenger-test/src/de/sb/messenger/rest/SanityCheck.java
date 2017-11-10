@@ -1,4 +1,4 @@
-package de.sb.messenger.persistence;
+package de.sb.messenger.rest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

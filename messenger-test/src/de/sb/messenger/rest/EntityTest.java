@@ -1,4 +1,4 @@
-package de.sb.messenger.persistence;
+package de.sb.messenger.rest;
 
 import static java.util.logging.Level.WARNING;
 import java.util.HashSet;
@@ -12,6 +12,8 @@ import javax.validation.ValidatorFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+
+import de.sb.messenger.persistence.BaseEntity;
 import de.sb.toolbox.Copyright;
 
 
