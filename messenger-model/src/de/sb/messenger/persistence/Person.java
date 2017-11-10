@@ -1,38 +1,97 @@
 package de.sb.messenger.persistence;
 
 import java.nio.charset.StandardCharsets;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+
+
+@Entity
+@Table(name="Person", schema="messenger")
+@DiscriminatorValue(value="Person")
+@PrimaryKeyJoinColumn(name="personIdentity", referencedColumnName="identity")
 
 public class Person extends BaseEntity {
-	static private final byte[] defaultPasswordHash = passwordHash("");
-	@NotNull
-	@Size(min=1, max=128)
-	@Pattern(regexp = "[A-Z0-9._-]+@[A-Z0-9.-].[A-Z]")
-	private String email; //modifizierbar
-	@NotNull	
-	@Size(min=32, max=32)
-	private byte [] passwordHash; //modifizierbar (falls neues Passwort)
-	@NotNull
-	private Group group; //nicht modifizierbar
-	@NotNull
-	@Valid
-	private final Name name; //(nicht) modifizierbar
-	@NotNull
-	@Valid
-	private final Address address; // (nicht) modifizierbar 
-	@NotNull
-	private Document avatar;  //(nicht) modifizierbar
-	private final Set <Message> messageAuthored; //Design Pattern: BrÃ¼cke
-	private final Set <Person> personObserved;
-	private final Set <Person> personObserving; //Mengenrelation: Nicht modifizierbar
 	
+	
+	static private final byte[] defaultPasswordHash = passwordHash("");
+	
+	@Column(name="email",unique=true, nullable=false)
+	@Pattern(regexp="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
+	@Size(min=1 , max=64)
+	@NotNull
+	private String email; //modifizierbar
+	
+	
+	@Column(name="passwordHash",unique=true, nullable=false)
+	@Size(min=32 , max=32)
+	@NotNull
+	private byte [] passwordHash; //modifizierbar (falls neues Passwort)
+	
+	
+	@Column (name="group", nullable=false, insertable=false)
+	@Enumerated(EnumType.STRING)
+	private Group group; //nicht modifizierbar
+	
+	@Valid
+	@Embedded
+	private final Name name; //(nicht) modifizierbar
+	
+	@Valid
+	@Embedded
+	private final Address address; // (nicht) modifizierbar 
+	
+	@Basic(fetch=FetchType.LAZY)
+	@JoinColumn(name="documentIdentity")
+	private Document avatar;  //(nicht) modifizierbar
+	
+	@OneToMany
+	@JoinTable(
+			name="Message",
+			joinColumns = @JoinColumn(name="messageIdentity"),
+			inverseJoinColumns = @JoinColumn(name="personIdentity")
+			)
+	private final Set <Message> messageAuthored; //Design Pattern: Brücke
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	//@JoinColumn(name="personIdentity")
+	@JoinTable(
+			name="ObservationAssociation",
+			joinColumns = @JoinColumn(name="peopleObserved", referencedColumnName="personIdentity"),
+			inverseJoinColumns = @JoinColumn(name="peopleObserving",referencedColumnName="personIdentity")
+			)
+	private final Set <Person> peopleObserved;
+	
+	//ObservationAssociation: Woher kommen die Werte?
+
+	
+	@OneToMany //(mappedBy="personIdentity")
+	private final Set <Person> peopleObserving; //Mengenrelation: Nicht modifizierbar
+
 	static public enum Group {
 		ADMIN, USER;
 	}
@@ -58,8 +117,8 @@ public class Person extends BaseEntity {
 		this.avatar = avatar;
 		this.passwordHash = defaultPasswordHash;
 		this.messageAuthored = Collections.emptySet();
-		this.personObserving = Collections.emptySet();
-		this.personObserved = new HashSet<Person>();
+		this.peopleObserving = Collections.emptySet();
+		this.peopleObserved = new HashSet<Person>();
 	}
 	
 
@@ -104,11 +163,11 @@ public Set<Message> getMessageAuthored() {
 }
 
 public Set<Person> getPersonObserved() {
-	return personObserved;
+	return peopleObserved;
 }
 
 public Set<Person> getPersonObserving() {
-	return personObserving;
+	return peopleObserving;
 }
 
 

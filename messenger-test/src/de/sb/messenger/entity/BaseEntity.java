@@ -1,39 +1,16 @@
-package de.sb.messenger.persistence;
+package de.sb.messenger.entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import de.sb.messenger.persistence.*;
 
 
-@Entity
-@Table(name="BaseEntity", schema="messenger")
-@Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="discriminator",
-discriminatorType=DiscriminatorType.STRING)
-@DiscriminatorValue(value="BaseEntity")
-
 public class BaseEntity implements Comparable<BaseEntity>{
-	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@NotNull
 	private final long identity; // nicht modifizierbar
-	
-	@Version
-	@Column(name="version", nullable=false)
 	private int version; // nicht modifizierbar
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="creationTimestamp", nullable=false, insertable=false, updatable=false)
 	private long creationTimestamp; // nicht modifizierbar
-	
-	@OneToMany(mappedBy ="BaseEntity")
-	@Column(name="messageCaused", nullable=true)
-	private final Set<Message> messageCaused;
+	private final Set<Message> messageCaused; // ???
 	
 	
 	public BaseEntity(){

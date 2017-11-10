@@ -1,20 +1,7 @@
-package de.sb.messenger.persistence;
+package de.sb.messenger.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-@Embeddable
 public class Name {
-	@NotNull
-	@Column(name="given", nullable=false)
-	@Size(min=0, max=31)
 	private String given; //modfizierbar
-	
-	@NotNull
-	@Column(name="given", nullable=false)
-	@Size(min=0, max=31)
 	private String family; //modifizierbar
 	
 	

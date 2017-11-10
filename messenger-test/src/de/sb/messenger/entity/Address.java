@@ -1,25 +1,8 @@
-package de.sb.messenger.persistence;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-@Embeddable
+package de.sb.messenger.entity;
 
 public class Address {
-	
-	@Column(name="street", nullable=true)
-	@Size(min=0, max=63)
 	private String street; // modifizierbar
-	
-	@Column(name="postcode", nullable=true)
-	@Size(min=0, max=15)
 	private String postcode; // modifizierbar
-	
-	@NotNull
-	@Column(name="city", nullable=false)
-	@Size(min=0, max=63)
 	private String city; //modifizierbar
 	
 	
