@@ -16,33 +16,34 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="Document", schema="messenger")
-@DiscriminatorValue(value="Document")
-@PrimaryKeyJoinColumn(name="documentIdentity", referencedColumnName="identity")
+@PrimaryKeyJoinColumn(name="documentIdentity")
 
 public class Document extends BaseEntity {
 	//wie passwordhash
 	static private final byte[] defaultContent = new byte [0];
+	
+	@Size(min=32, max=32)
 	static private final byte[] defaultMediaHash = mediaHash(defaultContent);
 	
 	@NotNull
-	@Column(name="contentHash", unique=true, nullable=false)
+	@Column(unique=true, nullable=false)
 	@Size(min=32, max=32)
 	private byte[] contentHash; //
 	
 	@NotNull
-	@Column(name="contentType", nullable=false)
+	@Column( nullable=false)
 	@Size(min=1, max=63)
 	private String contentType; // modifizierbar
 	
 	@NotNull
-	@Column(name="content",  nullable=false)
+	@Column( nullable=false)
 	@Pattern(regexp="^[a-z]+\\/[a-z\\.\\+\\-]+$")
 	@Size(min=1, max=16777215)
 	private byte [] content; // modifizierbar 
 
 	
 	
-	
+	@Size(min=32, max=32)
 	static public byte[] mediaHash (byte [] content)  {
 		MessageDigest md;
 		try {

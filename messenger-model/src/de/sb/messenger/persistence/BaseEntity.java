@@ -12,9 +12,8 @@ import de.sb.messenger.persistence.*;
 @Entity
 @Table(name="BaseEntity", schema="messenger")
 @Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="discriminator",
-discriminatorType=DiscriminatorType.STRING)
-@DiscriminatorValue(value="BaseEntity")
+@DiscriminatorColumn(name="discriminator", discriminatorType=DiscriminatorType.STRING)
+
 
 public class BaseEntity implements Comparable<BaseEntity>{
 	
@@ -31,16 +30,16 @@ public class BaseEntity implements Comparable<BaseEntity>{
 	@Column(name="creationTimestamp", nullable=false, insertable=false, updatable=false)
 	private long creationTimestamp; // nicht modifizierbar
 	
-	@OneToMany(mappedBy ="BaseEntity")
-	@Column(name="messageCaused", nullable=true)
-	private final Set<Message> messageCaused;
+	@OneToMany(mappedBy ="subject") //Feldname 
+	@Column(nullable=true)
+	private final Set<Message> messagesCaused;
 	
 	
 	public BaseEntity(){
 		this.identity = 0;
 		this.version=1;
 		this.creationTimestamp = System.currentTimeMillis();
-		this.messageCaused = Collections.emptySet();
+		this.messagesCaused = Collections.emptySet();
 	}
 
 
@@ -59,8 +58,8 @@ public class BaseEntity implements Comparable<BaseEntity>{
 	}
 
 
-	public Set<Message> getMessageCaused() { 
-		return messageCaused;
+	public Set<Message> getMessagesCaused() { 
+		return messagesCaused;
 	}
 
 

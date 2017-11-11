@@ -32,12 +32,11 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="Person", schema="messenger")
-@DiscriminatorValue(value="Person")
-@PrimaryKeyJoinColumn(name="personIdentity", referencedColumnName="identity")
+@PrimaryKeyJoinColumn(name="personIdentity")
 
 public class Person extends BaseEntity {
 	
-	
+	@Size(min=32, max=32)
 	static private final byte[] defaultPasswordHash = passwordHash("");
 	
 	@Column(name="email",unique=true, nullable=false)
@@ -53,7 +52,7 @@ public class Person extends BaseEntity {
 	private byte [] passwordHash; //modifizierbar (falls neues Passwort)
 	
 	
-	@Column (name="group", nullable=false, insertable=false)
+	@Column (name="groupAlias", nullable=false, insertable=false)
 	@Enumerated(EnumType.STRING)
 	private Group group; //nicht modifizierbar
 	
@@ -66,19 +65,13 @@ public class Person extends BaseEntity {
 	private final Address address; // (nicht) modifizierbar 
 	
 	@Basic(fetch=FetchType.LAZY)
-	@JoinColumn(name="documentIdentity")
+	@JoinColumn(name="content")
 	private Document avatar;  //(nicht) modifizierbar
 	
-	@OneToMany
-	@JoinTable(
-			name="Message",
-			joinColumns = @JoinColumn(name="messageIdentity"),
-			inverseJoinColumns = @JoinColumn(name="personIdentity")
-			)
+	@OneToMany(mappedBy="author")
 	private final Set <Message> messageAuthored; //Design Pattern: Brücke
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	//@JoinColumn(name="personIdentity")
 	@JoinTable(
 			name="ObservationAssociation",
 			joinColumns = @JoinColumn(name="peopleObserved", referencedColumnName="personIdentity"),
@@ -86,16 +79,15 @@ public class Person extends BaseEntity {
 			)
 	private final Set <Person> peopleObserved;
 	
-	//ObservationAssociation: Woher kommen die Werte?
-
 	
-	@OneToMany //(mappedBy="personIdentity")
+	@OneToMany (mappedBy="peopleObserved")
 	private final Set <Person> peopleObserving; //Mengenrelation: Nicht modifizierbar
 
 	static public enum Group {
 		ADMIN, USER;
 	}
-
+	
+	@Size(min=32, max=32)
 	static public byte[] passwordHash (String password)  {
 		MessageDigest md;
 		try {

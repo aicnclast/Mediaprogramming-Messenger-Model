@@ -6,7 +6,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Embeddable
-
 public class Address {
 	
 	@Column(name="street", nullable=true)
@@ -19,7 +18,7 @@ public class Address {
 	
 	@NotNull
 	@Column(name="city", nullable=false)
-	@Size(min=0, max=63)
+	@Size(min=1, max=63)
 	private String city; //modifizierbar
 	
 	

@@ -9,12 +9,12 @@ import javax.validation.constraints.Size;
 public class Name {
 	@NotNull
 	@Column(name="given", nullable=false)
-	@Size(min=0, max=31)
+	@Size(min=1, max=31)
 	private String given; //modfizierbar
 	
 	@NotNull
 	@Column(name="given", nullable=false)
-	@Size(min=0, max=31)
+	@Size(min=1, max=31)
 	private String family; //modifizierbar
 	
 	

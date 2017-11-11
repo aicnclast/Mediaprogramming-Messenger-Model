@@ -1,11 +1,11 @@
 package de.sb.messenger.persistence;
 
 import java.util.ArrayList;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -16,22 +16,21 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="Message", schema="messenger")
-@DiscriminatorValue(value="Message")
-@PrimaryKeyJoinColumn(name="messageIdentity", referencedColumnName="identity")
-
+@PrimaryKeyJoinColumn(name="messageIdentity") //refer nicht nötig
 public class Message extends BaseEntity {
 	
 @NotNull
-@OneToMany( cascade=CascadeType.ALL,mappedBy="personIdentity")
+@OneToMany(cascade=CascadeType.REMOVE)
+@JoinColumn(name="authorReference")
 private final Person author; //nicht modifizierbar
 
 @NotNull
-@JoinColumn(name="identity")
-@ManyToOne(cascade=CascadeType.ALL)
-private final BaseEntity subject; // Was ist subject???
+@ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
+@JoinColumn(name="subjectReference")
+private final BaseEntity subject; //Subject: Die Person die es erhält?
 
 @NotNull
-@Column(name="body", nullable=false)
+@Column(nullable=false)
 private String body; //modifierbar
 
 protected Message(){ //zur Initialisierung
