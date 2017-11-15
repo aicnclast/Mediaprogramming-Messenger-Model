@@ -98,4 +98,12 @@ public abstract class EntityTest {
 			entityManager.close();
 		}
 	}
+	
+	public String testString(int length) {
+		String res = "";
+		for(int x=0; x < length; x++) {
+			res += "a";
+		}
+		return res;
+	}
 }
