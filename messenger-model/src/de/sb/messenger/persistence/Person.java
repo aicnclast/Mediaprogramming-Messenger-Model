@@ -69,7 +69,7 @@ public class Person extends BaseEntity {
 	private Document avatar;  //(nicht) modifizierbar
 	
 	@OneToMany(mappedBy="author")
-	private final Set <Message> messageAuthored; //Design Pattern: Brücke
+	private final Set <Message> messageAuthored; //Design Pattern: Brï¿½cke
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinTable(
@@ -107,6 +107,7 @@ public class Person extends BaseEntity {
 		this.name = new Name();
 		this.address = new Address();
 		this.avatar = avatar;
+		this.email = "";
 		this.passwordHash = defaultPasswordHash;
 		this.messageAuthored = Collections.emptySet();
 		this.peopleObserving = Collections.emptySet();
