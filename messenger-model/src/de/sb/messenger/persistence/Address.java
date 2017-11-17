@@ -8,16 +8,16 @@ import javax.validation.constraints.Size;
 @Embeddable
 public class Address {
 	
-	@Column(name="street", nullable=true)
-	@Size(min=0, max=63)
+	@Column( nullable=true, updatable=true, insertable=true)
+	@Size(max=63)
 	private String street; // modifizierbar
 	
-	@Column(name="postcode", nullable=true)
-	@Size(min=0, max=15)
+	@Column( nullable=true, updatable=true, insertable=true)
+	@Size(max=15)
 	private String postcode; // modifizierbar
 	
 	@NotNull
-	@Column(name="city", nullable=false)
+	@Column( nullable=true, updatable=true, insertable=true)
 	@Size(min=1, max=63)
 	private String city; //modifizierbar
 	

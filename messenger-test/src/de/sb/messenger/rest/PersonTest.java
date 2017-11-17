@@ -26,8 +26,7 @@ public class PersonTest extends EntityTest {
 		entity.getAddress().setPostcode("12345");
 		entity.getAddress().setStreet("street");
 		
-		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 0);
+		Assert.assertEquals(validator.validate(entity).size(), 0);
 
 		//Grenzwertig legal
 		entity.setEmail(testString(59) + "@c.de");
@@ -37,65 +36,74 @@ public class PersonTest extends EntityTest {
 		entity.getAddress().setPostcode(testString(15));
 		entity.getAddress().setStreet(testString(63));
 
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 0);
+		Assert.assertEquals(validator.validate(entity).size(), 0);
+
 		
 		
 		//Grenzwertig illegal
-		entity.setEmail(testString(60) + "@c.de");
+		entity.setEmail(testString(124) + "@c.de");
+		Assert.assertEquals(validator.validate(entity).size(), 1);
 		entity.getName().setGiven(testString(32));
+		Assert.assertEquals(validator.validate(entity).size(), 2);
 		entity.getName().setFamily(testString(32));
+		Assert.assertEquals(validator.validate(entity).size(), 3);
 		entity.getAddress().setCity(testString(64));
+		Assert.assertEquals(validator.validate(entity).size(), 4);
 		entity.getAddress().setPostcode(testString(16));
+		Assert.assertEquals(validator.validate(entity).size(), 5);
 		entity.getAddress().setStreet(testString(64));
-		
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 6);
+		Assert.assertEquals(validator.validate(entity).size(), 6);
+
 		
 		
 		//illegal
 		entity.setEmail("ac.de");
-		
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 6);
+		Assert.assertEquals(validator.validate(entity).size(), 6);
 	}
 	
 	@Test
 	public void testLifeCycle(){
 		EntityManager em = this.getEntityManagerFactory().createEntityManager();
 		em.getTransaction().begin();
-		Document avatar = new Document();
-		em.persist(avatar);
-		em.getTransaction().commit();
-		this.getWasteBasket().add(avatar.getIdentity());		
+		Document avatar = em.find(Document.class, 1l);	
+		Person person = new Person(avatar);
+		person.getName().setGiven("given");
+		person.getName().setFamily("family");
+		person.getAddress().setCity("Berlin");
+		person.getAddress().setPostcode("12345");
+		person.getAddress().setStreet("street");
+		person.setEmail(System.currentTimeMillis() + "@test");
+		em.persist(person);
+		try {
+			em.getTransaction().commit();
+		} finally { 
+			em.getTransaction().begin();
+		}
+		final long id = person.getIdentity(); 
+		this.getWasteBasket().add(id);
+		em.clear();
+		
+		person = em.find(Person.class, id);
+		Assert.assertEquals(person.getName().getGiven(), "given");
+		Assert.assertEquals(person.getName().getFamily(), "family");
+		Assert.assertEquals(person.getAddress().getCity(), "Berlin");
+		Assert.assertEquals(person.getAddress().getPostcode(), "12345");
+		Assert.assertEquals(person.getAddress().getStreet(), "street");
+		em.clear();
 
-		em.getTransaction().begin();
-		Person entity = new Person(avatar);
-		em.persist(entity);
-		em.getTransaction().commit();		
-		em.refresh(entity);
-		Assert.assertEquals(entity.getVersion(), 1);
-		
-		this.getWasteBasket().add(entity.getIdentity());
-		
+		person = em.find(Person.class, id);
+		person.getName().setFamily("family2");
+		em.flush();
+		try {
+			em.getTransaction().commit();
+		} finally { 
+			em.getTransaction().begin();
+		}
+		em.clear();
 
-		entity.getName().setGiven("given");
-		entity.getName().setFamily("family");
-		entity.getAddress().setCity("Berlin");
-		entity.getAddress().setPostcode("12345");
-		entity.getAddress().setStreet("street");
-		
-		em.persist(entity);
-		em.getTransaction().commit();	
-		
-		em.refresh(entity);
+		person = em.find(Person.class, id);
+		Assert.assertEquals(person.getName().getFamily(), "family2");
 
-		Assert.assertEquals(entity.getName().getGiven(), "given");
-		Assert.assertEquals(entity.getName().getFamily(), "family");
-		Assert.assertEquals(entity.getAddress().getCity(), "Berlin");
-		Assert.assertEquals(entity.getAddress().getPostcode(), "12345");
-		Assert.assertEquals(entity.getAddress().getStreet(), "street");
-		
 		em.close();
 	}
 	

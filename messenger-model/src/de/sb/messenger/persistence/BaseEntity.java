@@ -29,27 +29,21 @@ public class BaseEntity implements Comparable<BaseEntity>{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@NotNull
-	
 	@XmlElement
 	private final long identity; // nicht modifizierbar
 	
-	@Version
-	@Column(name="version", nullable=false)
-	
+	@Version //optimistic locking
+	@Column(nullable=false, updatable=true)
 	@XmlElement
 	private int version; // nicht modifizierbar
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="creationTimestamp", nullable=false, insertable=false, updatable=false)
-	
+	@Column( nullable=false, insertable=true, updatable=false)
 	@XmlElement(required=true)
 	private long creationTimestamp; // nicht modifizierbar
 	
-	@OneToMany(mappedBy ="subject") //Feldname 
-	@Column(nullable=true)
-	
-	@XmlElement(required=true)
+	@OneToMany(mappedBy ="subject", cascade= CascadeType.REMOVE) //Feldname 
+	@NotNull
+	@XmlElement
 	private final Set<Message> messagesCaused;
 	
 	

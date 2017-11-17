@@ -9,19 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.ColumnResult;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
 import javax.persistence.*;
 import javax.validation.*;
 import javax.validation.constraints.NotNull;
@@ -31,6 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 
@@ -46,54 +34,58 @@ public class Person extends BaseEntity {
 	@XmlTransient
 	static private final byte[] defaultPasswordHash = passwordHash("");
 	
-	@Column(name="email",unique=true, nullable=false)
-	@Pattern(regexp="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
-	@Size(min=1 , max=64)
+	@Column(unique=true, nullable=false, updatable=true, insertable=true)
+	@CacheIndex(updateable=true)
+	@Pattern(regexp="^.+@.+$")
+	@Size(min=1 , max=128)
 	@NotNull
 	@XmlElement
 	private String email; //modifizierbar
 	
 	
-	@Column(name="passwordHash",unique=true, nullable=false)
+	@Column(nullable=false, updatable=true, insertable=true)
 	@Size(min=32 , max=32)
 	@NotNull
 	@XmlTransient
 	private byte [] passwordHash; //modifizierbar (falls neues Passwort)
 	
 	
-	@Column (name="groupAlias", nullable=false, insertable=false)
+	@Column (name="groupAlias", nullable=false, insertable=true, updatable=true)
 	@Enumerated(EnumType.STRING)
-	
 	@XmlElement
 	private Group group; //nicht modifizierbar
 	
 	@Valid
 	@Embedded
-	
+	@NotNull
 	@XmlElement
 	private final Name name; //(nicht) modifizierbar
 	
 	@Valid
 	@Embedded	
+	@NotNull
 	@XmlElement
 	private final Address address; // (nicht) modifizierbar 
 	
-	@Basic(fetch=FetchType.LAZY)
-	@JoinColumn(name="content")	
+	//@Basic(fetch=FetchType.LAZY)
+	@ManyToOne(optional=false)
+	@JoinColumn(name="avatarReference", nullable=false, updatable=true)	
 	@XmlElement
 	private Document avatar;  //(nicht) modifizierbar
 	
-	@OneToMany(mappedBy="author")
+	@NotNull
+	@OneToMany(mappedBy="author", cascade=CascadeType.REMOVE)
 	@XmlElement
 	private final Set <Message> messageAuthored; //Design Pattern: Br�cke
 	
 	
 	//wie wird ein jointable dargestellt?
-	@ManyToMany(fetch=FetchType.LAZY)
+	@NotNull
+	@ManyToMany
 	@JoinTable(
-			name="ObservationAssociation",
-			joinColumns = @JoinColumn(name="peopleObserved", referencedColumnName="personIdentity"),
-			inverseJoinColumns = @JoinColumn(name="peopleObserving",referencedColumnName="personIdentity")
+			schema= "messenger", name="ObservationAssociation", 
+			joinColumns = @JoinColumn(name="observingReference"),
+			inverseJoinColumns = @JoinColumn(name="observedReference")
 			)
 	private final Set <Person> peopleObserved;
 	

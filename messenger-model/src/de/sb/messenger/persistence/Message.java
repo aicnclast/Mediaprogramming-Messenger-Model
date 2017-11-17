@@ -20,13 +20,13 @@ import javax.xml.bind.annotation.XmlElement;
 @PrimaryKeyJoinColumn(name="messageIdentity") 
 public class Message extends BaseEntity {
 	
-@NotNull
-@OneToMany(cascade=CascadeType.REMOVE)
+//@NotNull Junit test, raus dann
+@ManyToOne(fetch=FetchType.EAGER, optional = false)
 @JoinColumn(name="authorReference")
 private final Person author; //nicht modifizierbar
 
-@NotNull
-@ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
+//@NotNull Junit test, raus dann
+@ManyToOne(fetch=FetchType.EAGER, optional = false)
 @JoinColumn(name="subjectReference")
 private final BaseEntity subject; //Subject: Die Person die es erh�lt?
 
