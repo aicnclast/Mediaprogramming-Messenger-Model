@@ -28,8 +28,8 @@ public abstract class EntityTest {
 	static private ValidatorFactory ENTITY_VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
 	private final Set<Long> wasteBasket = new HashSet<>();
-
-
+	
+	
 	/**
 	 * Returns the entity manager factory.
 	 * @return the entity manager factory
