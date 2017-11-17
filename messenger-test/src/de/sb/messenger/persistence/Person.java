@@ -115,6 +115,7 @@ public class Person extends BaseEntity {
 		this.name = new Name();
 		this.address = new Address();
 		this.avatar = avatar;
+		this.email = "";
 		this.passwordHash = defaultPasswordHash;
 		this.messageAuthored = Collections.emptySet();
 		this.peopleObserving = Collections.emptySet();
