@@ -5,6 +5,13 @@ import java.util.Collections;
 import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 
 import de.sb.messenger.persistence.*;
 
@@ -14,24 +21,35 @@ import de.sb.messenger.persistence.*;
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="discriminator", discriminatorType=DiscriminatorType.STRING)
 
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType
+@XmlSeeAlso(value = {Person.class, Document.class, Message.class})
 
 public class BaseEntity implements Comparable<BaseEntity>{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@NotNull
+	
+	@XmlElement
 	private final long identity; // nicht modifizierbar
 	
 	@Version
 	@Column(name="version", nullable=false)
+	
+	@XmlElement
 	private int version; // nicht modifizierbar
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="creationTimestamp", nullable=false, insertable=false, updatable=false)
+	
+	@XmlElement(required=true)
 	private long creationTimestamp; // nicht modifizierbar
 	
 	@OneToMany(mappedBy ="subject") //Feldname 
 	@Column(nullable=true)
+	
+	@XmlElement(required=true)
 	private final Set<Message> messagesCaused;
 	
 	

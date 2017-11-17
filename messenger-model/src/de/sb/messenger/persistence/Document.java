@@ -33,11 +33,11 @@ public class Document extends BaseEntity {
 	@NotNull
 	@Column( nullable=false)
 	@Size(min=1, max=63)
-	@Pattern(regexp="^[a-z]+\\/[a-z\\.\\+\\-]+$")
 	private String contentType; // modifizierbar
 	
 	@NotNull
 	@Column( nullable=false)
+	@Pattern(regexp="^[a-z]+\\/[a-z\\.\\+\\-]+$")
 	@Size(min=1, max=16777215)
 	private byte [] content; // modifizierbar 
 
@@ -57,7 +57,7 @@ public class Document extends BaseEntity {
 	
 	
 	public Document() {
-		this.setContentType("text/text"); //default fï¿½r allgemeine byte-Arrays
+		this.setContentType("text/text"); //default für allgemeine byte-Arrays
 		this.content = defaultContent; //annotations 
 		this.contentHash = defaultMediaHash;
 			

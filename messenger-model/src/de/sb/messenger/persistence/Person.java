@@ -27,6 +27,11 @@ import javax.validation.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 
 
@@ -36,42 +41,55 @@ import javax.validation.constraints.Size;
 
 public class Person extends BaseEntity {
 	
+	
 	@Size(min=32, max=32)
+	@XmlTransient
 	static private final byte[] defaultPasswordHash = passwordHash("");
 	
 	@Column(name="email",unique=true, nullable=false)
 	@Pattern(regexp="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
 	@Size(min=1 , max=64)
 	@NotNull
+	@XmlElement
 	private String email; //modifizierbar
 	
 	
 	@Column(name="passwordHash",unique=true, nullable=false)
 	@Size(min=32 , max=32)
 	@NotNull
+	@XmlTransient
 	private byte [] passwordHash; //modifizierbar (falls neues Passwort)
 	
 	
 	@Column (name="groupAlias", nullable=false, insertable=false)
 	@Enumerated(EnumType.STRING)
+	
+	@XmlElement
 	private Group group; //nicht modifizierbar
 	
 	@Valid
 	@Embedded
+	
+	@XmlElement
 	private final Name name; //(nicht) modifizierbar
 	
 	@Valid
-	@Embedded
+	@Embedded	
+	@XmlElement
 	private final Address address; // (nicht) modifizierbar 
 	
 	@Basic(fetch=FetchType.LAZY)
-	@JoinColumn(name="content")
+	@JoinColumn(name="content")	
+	@XmlElement
 	private Document avatar;  //(nicht) modifizierbar
 	
 	@OneToMany(mappedBy="author")
-	private final Set <Message> messageAuthored; //Design Pattern: Brücke
+	@XmlElement
+	private final Set <Message> messageAuthored; //Design Pattern: Brï¿½cke
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	
+	//wie wird ein jointable dargestellt?
+	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(
 			name="ObservationAssociation",
 			joinColumns = @JoinColumn(name="peopleObserved", referencedColumnName="personIdentity"),
@@ -80,7 +98,8 @@ public class Person extends BaseEntity {
 	private final Set <Person> peopleObserved;
 	
 	
-	@OneToMany (mappedBy="peopleObserved")
+	@ManyToMany (mappedBy="peopleObserved")
+	@XmlInverseReference(mappedBy="peopleObserved")
 	private final Set <Person> peopleObserving; //Mengenrelation: Nicht modifizierbar
 
 	static public enum Group {
@@ -122,9 +141,11 @@ public void setPasswordHash(byte[] passwordHash) {
 		this.passwordHash = passwordHash;
 	}
 
+@XmlElement
 public long getAvatarReference() {  
 	return this.avatar == null ? 0 : this.avatar.getIdentity();
 } 
+
 
 public String getEmail() {
 	return email;
