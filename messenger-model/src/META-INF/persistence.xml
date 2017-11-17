@@ -7,16 +7,9 @@
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-<<<<<<< HEAD
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/"/>
 			<property name="javax.persistence.jdbc.user" value="root"/>
 			<property name="javax.persistence.jdbc.password" value="admin"/>
-=======
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/messenger"/>
-			<property name="javax.persistence.jdbc.user" value="root"/>
-			<property name="javax.persistence.jdbc.password" value="admin"></property>
->>>>>>> aca2ea77aab57ec2b10ea008a48cb8f825e392ee
-
 			<property name="eclipselink.logging.level.sql" value="FINE"/>
 			<property name="eclipselink.logging.parameters" value="true"/>
 
