@@ -13,7 +13,7 @@ public class Name {
 	private String given; //modfizierbar
 	
 	@NotNull
-	@Column(name="family", nullable=false)
+	@Column(name="given", nullable=false)
 	@Size(min=1, max=31)
 	private String family; //modifizierbar
 	

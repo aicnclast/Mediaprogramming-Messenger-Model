@@ -13,10 +13,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 
 @Entity
 @Table(name="Message", schema="messenger")
-@PrimaryKeyJoinColumn(name="messageIdentity") //refer nicht nötig
+@PrimaryKeyJoinColumn(name="messageIdentity") 
 public class Message extends BaseEntity {
 	
 @NotNull
@@ -27,10 +28,11 @@ private final Person author; //nicht modifizierbar
 @NotNull
 @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
 @JoinColumn(name="subjectReference")
-private final BaseEntity subject; //Subject: Die Person die es erhält?
+private final BaseEntity subject; //Subject: Die Person die es erhï¿½lt?
 
 @NotNull
 @Column(nullable=false)
+@XmlElement
 private String body; //modifierbar
 
 protected Message(){ //zur Initialisierung
@@ -59,8 +61,14 @@ public void setBody(String body) {
 	this.body=body;
 }
 
+@XmlElement
 public long getAuthorReference() {
 	 return this.author == null ? 0 : this.author.getIdentity();
+}
+
+@XmlElement
+public long getSubjectReference() {
+	 return this.subject == null ? 0 : this.subject.getIdentity();
 }
 
 }
