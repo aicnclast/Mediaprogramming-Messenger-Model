@@ -47,19 +47,19 @@ public class MessageTest extends EntityTest {
 		this.getWasteBasket().add(avatar.getIdentity());		
 
 		em.getTransaction().begin();
-		Person person = new Person(avatar);
-		em.persist(person);
+		Person author = new Person(avatar);
+		em.persist(author);
 		em.getTransaction().commit();	
-		this.getWasteBasket().add(person.getIdentity());
+		this.getWasteBasket().add(author.getIdentity());
 		
 		em.getTransaction().begin();
-		BaseEntity base = new BaseEntity();
-		em.persist(base);
+		BaseEntity subject = new BaseEntity();
+		em.persist(subject);
 		em.getTransaction().commit();	
-		this.getWasteBasket().add(base.getIdentity());
+		this.getWasteBasket().add(subject.getIdentity());
 
 		em.getTransaction().begin();
-		Message entity = new Message(person, base);
+		Message entity = new Message(author, subject);
 		entity.setBody("test");
 		em.persist(entity);
 		em.getTransaction().commit();		
@@ -67,6 +67,8 @@ public class MessageTest extends EntityTest {
 		em.refresh(entity);
 		
 		Assert.assertEquals(entity.getBody(), "test");
+		Assert.assertEquals(entity.getAuthor().getIdentity(), author.getIdentity());
+		Assert.assertEquals(entity.getSubject().getIdentity(), subject.getIdentity());
 		
 		em.close();
 	}
