@@ -41,34 +41,25 @@ public class MessageTest extends EntityTest {
 	public void testLifeCycle(){
 		EntityManager em = this.getEntityManagerFactory().createEntityManager();
 		em.getTransaction().begin();
-		Document avatar = new Document();
-		em.persist(avatar);
-		em.getTransaction().commit();
-		this.getWasteBasket().add(avatar.getIdentity());		
+		Person author = em.find(Person.class, 2l);
+		BaseEntity subject = em.find(Person.class, 3l);
 
-		em.getTransaction().begin();
-		Person author = new Person(avatar);
-		em.persist(author);
-		em.getTransaction().commit();	
-		this.getWasteBasket().add(author.getIdentity());
+		Message message = new Message(author, subject);
+		message.setBody("test");
+		em.persist(message);
+		try {
+			em.getTransaction().commit();
+		} finally { 
+			em.getTransaction().begin();
+		}		
+		final long id = message.getIdentity();
+		this.getWasteBasket().add(id);
+		em.clear();
 		
-		em.getTransaction().begin();
-		BaseEntity subject = new BaseEntity();
-		em.persist(subject);
-		em.getTransaction().commit();	
-		this.getWasteBasket().add(subject.getIdentity());
-
-		em.getTransaction().begin();
-		Message entity = new Message(author, subject);
-		entity.setBody("test");
-		em.persist(entity);
-		em.getTransaction().commit();		
-		this.getWasteBasket().add(entity.getIdentity());
-		em.refresh(entity);
-		
-		Assert.assertEquals(entity.getBody(), "test");
-		Assert.assertEquals(entity.getAuthor().getIdentity(), author.getIdentity());
-		Assert.assertEquals(entity.getSubject().getIdentity(), subject.getIdentity());
+		message = em.find(Message.class, id);
+		Assert.assertEquals(message.getBody(), "test");
+		Assert.assertEquals(message.getAuthor(), author);
+		Assert.assertEquals(message.getSubject(), subject);
 		
 		em.close();
 	}
