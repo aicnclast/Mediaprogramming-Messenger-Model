@@ -33,7 +33,7 @@ public class BaseEntity implements Comparable<BaseEntity>{
 	private final long identity; // nicht modifizierbar
 	
 	@Version //optimistic locking
-	@Column(nullable=false, updatable=true)
+	@Column(nullable=false, updatable=true, insertable=false)
 	@XmlElement
 	private int version; // nicht modifizierbar
 	

@@ -91,7 +91,6 @@ public class Person extends BaseEntity {
 	
 	
 	@ManyToMany (mappedBy="peopleObserved")
-	@XmlInverseReference(mappedBy="peopleObserved")
 	private final Set <Person> peopleObserving; //Mengenrelation: Nicht modifizierbar
 
 	static public enum Group {
