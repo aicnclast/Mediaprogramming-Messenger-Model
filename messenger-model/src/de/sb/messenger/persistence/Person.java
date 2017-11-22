@@ -69,7 +69,7 @@ public class Person extends BaseEntity {
 	
 	//@Basic(fetch=FetchType.LAZY)
 	@ManyToOne(optional=false)
-	@JoinColumn(name="avatarReference", nullable=false, updatable=true)	
+	@JoinColumn(name="avatarReference", nullable=false, insertable=false, updatable=true)	
 	@XmlElement
 	private Document avatar;  //(nicht) modifizierbar
 	

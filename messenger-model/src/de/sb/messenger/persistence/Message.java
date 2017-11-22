@@ -22,16 +22,16 @@ public class Message extends BaseEntity {
 	
 //@NotNull Junit test, raus dann
 @ManyToOne(fetch=FetchType.EAGER, optional = false)
-@JoinColumn(name="authorReference")
+@JoinColumn(name="authorReference", updatable=true, insertable=true)
 private final Person author; //nicht modifizierbar
 
 //@NotNull Junit test, raus dann
 @ManyToOne(fetch=FetchType.EAGER, optional = false)
-@JoinColumn(name="subjectReference")
+@JoinColumn(name="subjectReference", updatable=true, insertable=true)
 private final BaseEntity subject; //Subject: Die Person die es erh�lt?
 
 @NotNull
-@Column(nullable=false)
+@Column(nullable=false, updatable=true, insertable=true)
 @XmlElement
 private String body; //modifierbar
 
