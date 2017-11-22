@@ -25,15 +25,11 @@ public class MessageTest extends EntityTest {
 		person.getAddress().setStreet("street");
 		
 		Message entity = new Message(person, new BaseEntity());
-		entity.setBody("test");
 		
-		Set<ConstraintViolation<Message>> constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 0);
-
+		entity.setBody("test");
+		Assert.assertEquals(validator.validate(entity).size(), 0);
 		entity.setBody(null);
-
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 1);
+		Assert.assertEquals(validator.validate(entity).size(), 1);
 		
 	}
 	

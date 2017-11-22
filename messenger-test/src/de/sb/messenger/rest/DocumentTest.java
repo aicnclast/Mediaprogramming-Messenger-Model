@@ -20,52 +20,56 @@ public class DocumentTest extends EntityTest {
 		//Legal values, minimal content
 		entity.setContentType("text/css");
 		entity.setContent(new byte [1]);
-		Set<ConstraintViolation<Document>> constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 0);
+		Assert.assertEquals(validator.validate(entity).size(), 0);
 
 		//maximal content
 		entity.setContent(new byte [16777215]);
-
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 0);
+		Assert.assertEquals(validator.validate(entity).size(), 0);
 		
 		//Illegal
-		entity.setContent(new byte [0]);
-		
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 1);
-
-		//Illegal
-		entity.setContent(new byte [16777216]);
 		entity.setContentType("text-css");
-		
-		constraintViolations = validator.validate(entity);
-		Assert.assertEquals(constraintViolations.size(), 2);
+		Assert.assertEquals(validator.validate(entity).size(), 1);
+		entity.setContent(new byte [0]);
+		Assert.assertEquals(validator.validate(entity).size(), 2);
+		entity.setContent(new byte [16777216]);
+		Assert.assertEquals(validator.validate(entity).size(), 2);
 	}
 	
 	@Test
 	public void testLifeCycle(){
 		EntityManager em = this.getEntityManagerFactory().createEntityManager();
 		em.getTransaction().begin();
-		Document entity = new Document();
-		em.persist(entity);
-		em.getTransaction().commit();
-		this.getWasteBasket().add(entity.getIdentity());		
-
-		Assert.assertEquals(entity.getVersion(), 1);
-
-		entity.setContentType("text/css");
+		Document document = new Document();
 		byte[] content = new byte [1];
-		entity.setContent(content);
-		
-		em.persist(entity);
-		em.getTransaction().commit();	
-		
-		em.refresh(entity);
+		document.setContent(content);
+		document.setContentType("text/css");
+		em.persist(document);
+		try {
+			em.getTransaction().commit();
+		} finally { 
+			em.getTransaction().begin();
+		}
+		final long id = document.getIdentity(); 
+		this.getWasteBasket().add(id);		
+		em.clear();
 
-		Assert.assertEquals(entity.getContent(), content);
-		Assert.assertEquals(entity.getContentHash(), Document.mediaHash(content));
-		Assert.assertEquals(entity.getContentType(), "text/css");
+		document = em.find(Document.class, id);
+		Assert.assertEquals(document.getContent(), content);
+		Assert.assertEquals(document.getContentType(), "text/css");
+		em.clear();
+		
+		document = em.find(Document.class, id);
+		document.setContentType("text/html");
+		em.flush();
+		try {
+			em.getTransaction().commit();
+		} finally { 
+			em.getTransaction().begin();
+		}
+		em.clear();
+
+		document = em.find(Document.class, id);
+		Assert.assertEquals(document.getContentType(), "text/html");
 		
 		em.close();
 	}
