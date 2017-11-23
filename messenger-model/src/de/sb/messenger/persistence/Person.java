@@ -75,7 +75,6 @@ public class Person extends BaseEntity {
 	
 	@NotNull
 	@OneToMany(mappedBy="author", cascade=CascadeType.REMOVE)
-	@XmlElement
 	private final Set <Message> messageAuthored; //Design Pattern: Br�cke
 	
 	
@@ -117,6 +116,7 @@ public class Person extends BaseEntity {
 		this.name = new Name();
 		this.address = new Address();
 		this.avatar = avatar;
+		setEmail("");
 		this.passwordHash = defaultPasswordHash;
 		this.messageAuthored = Collections.emptySet();
 		this.peopleObserving = Collections.emptySet();
