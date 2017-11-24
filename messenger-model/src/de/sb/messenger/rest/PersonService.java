@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 import de.sb.messenger.persistence.Document;
 import de.sb.messenger.persistence.Message;
 import de.sb.messenger.persistence.Person;
+import de.sb.toolbox.net.RestCredentials;
 import de.sb.toolbox.net.RestJpaLifecycleProvider;
 
 @Path("/people")
@@ -49,7 +50,8 @@ public class PersonService extends EntityService{
 	@PUT
     @Path("/people")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public long updatePerson ( @PathParam("identity") long id,
+	public long updatePerson ( @HeaderParam("Authorization") final String authentication, 
+			@PathParam("identity") long id,
 			@HeaderParam("avatar") Document avatar,
 			@HeaderParam("familyName") String family,
     		@HeaderParam("givenName") String given,
@@ -58,10 +60,10 @@ public class PersonService extends EntityService{
     		@HeaderParam("city") String city,
     		@HeaderParam("postcode") String postcode,
     		@HeaderParam("passwordHash") byte[] setPassword
-    		
+   
     		)
 	{
-
+		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		Person person;
 
 		if (id == 0) {
@@ -86,7 +88,8 @@ public class PersonService extends EntityService{
 		messengerManager.persist(person);
 		messengerManager.getTransaction().commit();
 		
-		return person.getIdentity();
+		final long identity = person.getIdentity();
+		return identity;
 
 
 	}
@@ -103,14 +106,14 @@ public Person getPersonByID(@HeaderParam("Authorization") final String authentic
 	throw new NotFoundException();
 }
 
-@GET
-@Path("/people/{identity}")
-@Produces({ APPLICATION_JSON, APPLICATION_XML })
-public Response getPersonByID2(@HeaderParam("Authorization") final String authentication, @PathParam("identity")long id) {
-	Person person = messengerManager.find(Person.class, id);
-	if (person instanceof Person)
-	return Response.ok(person).build();	
-	throw new NotFoundException();
-}
+//@GET
+//@Path("/people/{identity}")
+//@Produces({ APPLICATION_JSON, APPLICATION_XML })
+//public Response getPersonByID2(@HeaderParam("Authorization") final String authentication, @PathParam("identity")long id) {
+//	Person person = messengerManager.find(Person.class, id);
+//	if (person instanceof Person)
+//	return Response.ok(person).build();	
+//	throw new NotFoundException();
+//}
 	
 }
