@@ -59,30 +59,27 @@ public class PersonService extends EntityService{
 	@PUT
     @Path("people")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public long updatePerson ( @HeaderParam("Authorization") final String authentication, 
-			@PathParam("identity") long id,
-			@FormParam("avatar") Document avatar,
-			@FormParam("familyName") String family,
-	    		@FormParam("givenName") String given,
-	    		@FormParam("email") String email,
-	    		@FormParam("street") String street,
-	    		@FormParam("city") String city,
-	    		@FormParam("postcode") String postcode,
-	    		@FormParam("passwordHash") byte[] setPassword
+	public long updatePerson (@HeaderParam("Authorization") final String authentication, 
+						 	    @FormParam("identity") long id,
+								@FormParam("avatar") final Document avatar,
+								@FormParam("familyName") final String family,
+						    		@FormParam("givenName") final String given,
+						    		@FormParam("email") final String email,
+						    		@FormParam("street") final String street,
+						    		@FormParam("city") final String city,
+						    		@FormParam("postcode") final String postcode,
+						    		@FormParam("passwordHash") final byte[] setPassword
     		){
 		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+		
 		Person person;
-
 		if (id == 0) {
 		 person = (new Person(null));	
-		}
-		
-		else {
+		} else {
 		 person = messengerManager.find(Person.class, id);
 		}
 
 		person.setEmail(email);
-		
 		person.getName().setGiven(given);
 		person.getName().setFamily(family);
 		person.setPasswordHash(setPassword);
@@ -104,7 +101,7 @@ public class PersonService extends EntityService{
 	@GET
 	@Path("people/{identity}")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public Person getPersonByID(@HeaderParam("Authorization") final String authentication, @PathParam("identity") long id) {
+	public Person getPersonByID(@HeaderParam("Authorization") final String authentication, @PathParam("identity") final long id) {
 		Person person = messengerManager.find(Person.class, id);
 		if (person == null) {
 			throw new NotFoundException();
@@ -112,11 +109,12 @@ public class PersonService extends EntityService{
 		return person;
 	}
 
+	
 	@GET
 	@Path("people/{identity}/messagesAuthored")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public List<Message> getPersonMessagesAuthored(@HeaderParam("Authorization") final String authentication, 
-											 @PathParam("identity")long id) {
+											 @PathParam("identity") final long id) {
 		Person person = messengerManager.find(Person.class, id);
 		if (person == null) {
 			throw new NotFoundException();
@@ -132,7 +130,7 @@ public class PersonService extends EntityService{
 	@Path("people/{identity}/peopleObserving")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public List<Person> getPersonPeopleObserving(@HeaderParam("Authorization") final String authentication, 
-											 @PathParam("identity")long id) {
+											 @PathParam("identity") final long id) {
 		Person person = messengerManager.find(Person.class, id);
 		if (person == null) {
 			throw new NotFoundException();
@@ -152,7 +150,7 @@ public class PersonService extends EntityService{
 	@Path("people/{identity}/peopleObserved")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public List<Person> getPersonPeopleObserved(@HeaderParam("Authorization") final String authentication, 
-											 @PathParam("identity")long id) {
+											 @PathParam("identity") final long id) {
 		Person person = messengerManager.find(Person.class, id);
 		if (person == null) {
 			throw new NotFoundException();
@@ -171,7 +169,7 @@ public class PersonService extends EntityService{
 	@Path("people/{identity}/avatar")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public List<Person> getPersonAvatar(@HeaderParam("Authorization") final String authentication, 
-											 @PathParam("identity")long id) {
+											 @PathParam("identity") final long id) {
 		
 		return null;
 	}

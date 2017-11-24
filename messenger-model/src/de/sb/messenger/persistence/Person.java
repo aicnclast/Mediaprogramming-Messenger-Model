@@ -30,8 +30,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 public class Person extends BaseEntity {
 	
 	
-	@Size(min=32, max=32)
-	@XmlTransient
+	
+	//static members will not be annotated
 	static private final byte[] defaultPasswordHash = passwordHash("");
 	
 	@Column(unique=true, nullable=false, updatable=true, insertable=true)
@@ -69,7 +69,7 @@ public class Person extends BaseEntity {
 	
 	//@Basic(fetch=FetchType.LAZY)
 	@ManyToOne(optional=false)
-	@JoinColumn(name="avatarReference", nullable=false, insertable=false, updatable=true)	
+	@JoinColumn(name="avatarReference", nullable=false, insertable=true, updatable=true)	
 	@XmlElement
 	private Document avatar;  //(nicht) modifizierbar
 	
@@ -96,7 +96,7 @@ public class Person extends BaseEntity {
 		ADMIN, USER;
 	}
 	
-	@Size(min=32, max=32)
+	
 	static public byte[] passwordHash (String password)  {
 		MessageDigest md;
 		try {

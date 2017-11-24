@@ -21,11 +21,11 @@ import javax.xml.bind.annotation.XmlElement;
 public class Message extends BaseEntity {
 	
 @ManyToOne(fetch=FetchType.EAGER, optional = false)
-@JoinColumn(name="authorReference", updatable=true, insertable=true)
+@JoinColumn(name="authorReference", nullable = false, updatable=false, insertable=true)
 private final Person author; //nicht modifizierbar
 
 @ManyToOne(fetch=FetchType.EAGER, optional = false)
-@JoinColumn(name="subjectReference", updatable=true, insertable=true)
+@JoinColumn(name="subjectReference", nullable= false, updatable=false, insertable=true)
 private final BaseEntity subject; //Subject: Die Person die es erh�lt?
 
 @NotNull
