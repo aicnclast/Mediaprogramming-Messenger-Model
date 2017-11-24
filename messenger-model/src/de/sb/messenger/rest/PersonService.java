@@ -146,6 +146,34 @@ public class PersonService extends EntityService{
 		List<Person> result = messengerManager.createQuery(cq).getResultList();
 		return result;
 	}
+
 	
+	@GET
+	@Path("people/{identity}/peopleObserved")
+	@Produces({ APPLICATION_JSON, APPLICATION_XML })
+	public List<Person> getPersonPeopleObserved(@HeaderParam("Authorization") final String authentication, 
+											 @PathParam("identity")long id) {
+		Person person = messengerManager.find(Person.class, id);
+		if (person == null) {
+			throw new NotFoundException();
+		}
+		
+		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+		Root<Person> observed = cq.from(Person.class);
+		cq.where(observed.in(person.getPersonObserved()));
+		cq.orderBy(cb.asc(observed.get("familyName")), cb.asc(observed.get("givenName")), cb.asc(observed.get("email")));
+		
+		List<Person> result = messengerManager.createQuery(cq).getResultList();
+		return result;
+	}
+	
+	@GET
+	@Path("people/{identity}/avatar")
+	@Produces({ APPLICATION_JSON, APPLICATION_XML })
+	public List<Person> getPersonAvatar(@HeaderParam("Authorization") final String authentication, 
+											 @PathParam("identity")long id) {
+		
+		return null;
+	}
 	
 }
