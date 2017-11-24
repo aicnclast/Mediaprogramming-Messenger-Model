@@ -15,15 +15,7 @@ public class MessageTest extends EntityTest {
 	@Test
 	public void testConstraints(){
 		Validator validator = this.getEntityValidatorFactory().getValidator();
-		Person person = new Person(new Document());
-		person.setEmail("ab@c.de");
-		person.setPasswordHash(Person.passwordHash("testPassword"));
-		person.getName().setGiven("given");
-		person.getName().setFamily("family");
-		person.getAddress().setCity("Berlin");
-		person.getAddress().setPostcode("12345");
-		person.getAddress().setStreet("street");
-		
+		Person person = new Person(null);
 		Message entity = new Message(person, new BaseEntity());
 		
 		entity.setBody("test");
