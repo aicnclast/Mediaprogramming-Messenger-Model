@@ -3,12 +3,19 @@ package de.sb.messenger.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotFoundException;
@@ -20,15 +27,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.sb.messenger.persistence.BaseEntity;
 import de.sb.messenger.persistence.Document;
 import de.sb.messenger.persistence.Message;
 import de.sb.messenger.persistence.Person;
 import de.sb.toolbox.net.RestCredentials;
 import de.sb.toolbox.net.RestJpaLifecycleProvider;
 
-@Path("/people")
+@Path("people")
 public class PersonService extends EntityService{
 	final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
+	final CriteriaBuilder cb = messengerManager.getCriteriaBuilder();
 	/*
 	@GET
     @Path("/people")
@@ -48,21 +57,19 @@ public class PersonService extends EntityService{
 */	
 	
 	@PUT
-    @Path("/people")
+    @Path("people")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public long updatePerson ( @HeaderParam("Authorization") final String authentication, 
 			@PathParam("identity") long id,
-			@HeaderParam("avatar") Document avatar,
-			@HeaderParam("familyName") String family,
-    		@HeaderParam("givenName") String given,
-    		@HeaderParam("email") String email,
-    		@HeaderParam("street") String street,
-    		@HeaderParam("city") String city,
-    		@HeaderParam("postcode") String postcode,
-    		@HeaderParam("passwordHash") byte[] setPassword
-   
-    		)
-	{
+			@FormParam("avatar") Document avatar,
+			@FormParam("familyName") String family,
+	    		@FormParam("givenName") String given,
+	    		@FormParam("email") String email,
+	    		@FormParam("street") String street,
+	    		@FormParam("city") String city,
+	    		@FormParam("postcode") String postcode,
+	    		@FormParam("passwordHash") byte[] setPassword
+    		){
 		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		Person person;
 
@@ -90,30 +97,55 @@ public class PersonService extends EntityService{
 		
 		final long identity = person.getIdentity();
 		return identity;
-
-
 	}
 
 
-//Entitäten in Request/Response Body bedeutet was? def. im Methodenkopf
-@GET
-@Path("/people/{identity}")
-@Produces({ APPLICATION_JSON, APPLICATION_XML })
-public Person getPersonByID(@HeaderParam("Authorization") final String authentication, @PathParam("identity") long id) {
-	Person person = messengerManager.find(Person.class, id);
-	if (person instanceof Person)
-	return person;	
-	throw new NotFoundException();
-}
+	//Entitï¿½ten in Request/Response Body bedeutet was? def. im Methodenkopf
+	@GET
+	@Path("people/{identity}")
+	@Produces({ APPLICATION_JSON, APPLICATION_XML })
+	public Person getPersonByID(@HeaderParam("Authorization") final String authentication, @PathParam("identity") long id) {
+		Person person = messengerManager.find(Person.class, id);
+		if (person == null) {
+			throw new NotFoundException();
+		}
+		return person;
+	}
 
-//@GET
-//@Path("/people/{identity}")
-//@Produces({ APPLICATION_JSON, APPLICATION_XML })
-//public Response getPersonByID2(@HeaderParam("Authorization") final String authentication, @PathParam("identity")long id) {
-//	Person person = messengerManager.find(Person.class, id);
-//	if (person instanceof Person)
-//	return Response.ok(person).build();	
-//	throw new NotFoundException();
-//}
+	@GET
+	@Path("people/{identity}/messagesAuthored")
+	@Produces({ APPLICATION_JSON, APPLICATION_XML })
+	public List<Message> getPersonMessagesAuthored(@HeaderParam("Authorization") final String authentication, 
+											 @PathParam("identity")long id) {
+		Person person = messengerManager.find(Person.class, id);
+		if (person == null) {
+			throw new NotFoundException();
+		}
+		//return Response.ok(person).build();	
+		List<Message> messages = new ArrayList<Message>(person.getMessageAuthored());
+		messages.sort((a, b) -> {return (int) (a.getIdentity() - b.getIdentity());});
+		return messages;
+	}
+	
+	
+	@GET
+	@Path("people/{identity}/peopleObserving")
+	@Produces({ APPLICATION_JSON, APPLICATION_XML })
+	public List<Person> getPersonPeopleObserving(@HeaderParam("Authorization") final String authentication, 
+											 @PathParam("identity")long id) {
+		Person person = messengerManager.find(Person.class, id);
+		if (person == null) {
+			throw new NotFoundException();
+		}
+		
+		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+		Root<Person> observers = cq.from(Person.class);
+		cq.where(observers.in(person.getPersonObserving()));
+		cq.orderBy(cb.asc(observers.get("familyName")), cb.asc(observers.get("givenName")), cb.asc(observers.get("email")));
+		
+		List<Person> result = messengerManager.createQuery(cq).getResultList();
+		return result;
+	}
+	
 	
 }
