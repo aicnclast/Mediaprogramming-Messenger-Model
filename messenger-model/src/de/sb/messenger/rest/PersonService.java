@@ -234,14 +234,11 @@ public class PersonService extends EntityService {
 		}
 
 		messengerManager.getEntityManagerFactory().getCache().evict(Person.class, id);
-
+		messengerManager.persist(person);
 		try {
-			messengerManager.persist(person);
 			messengerManager.getTransaction().commit();
-
 		} catch (final RollbackException exception) {
 			throw new ClientErrorException(CONFLICT);
-
 		} finally {
 			messengerManager.getTransaction().begin();
 		}
@@ -285,7 +282,7 @@ public class PersonService extends EntityService {
 	/*
 	 * Updates the person's avatar (owner only), with the document content being
 	 * passed within the HTTP request body, and the media type passed as
-	 * Header-Field “Content-type”. If the given content is empty, the person's
+	 * Header-Field ï¿½Content-typeï¿½. If the given content is empty, the person's
 	 * avatar shall be set to the default document (identity=1). Otherwise, if a
 	 * document matching the media hash of the given content already exists, then
 	 * this document shall become the person's avatar. Otherwise, the given content
@@ -329,15 +326,13 @@ public class PersonService extends EntityService {
 				person.getAvatar().setContentType(avatar.getContentType());
 			}
 		}
-
+		
+		messengerManager.persist(person);
+		//messengerManager.persist(person.getAvatar()); da CASCADE ?
 		try {
-			messengerManager.persist(person);
-			//messengerManager.persist(person.getAvatar()); da CASCADE ?
 			messengerManager.getTransaction().commit();
-
 		} catch (final RollbackException exception) {
 			throw new ClientErrorException(CONFLICT);
-
 		} finally {
 			messengerManager.getTransaction().begin();
 		}
