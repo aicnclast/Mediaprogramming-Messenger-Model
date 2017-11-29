@@ -2,7 +2,10 @@ package de.sb.messenger.rest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.NotAuthorizedException;
+
+import de.sb.messenger.persistence.Document;
 import de.sb.messenger.persistence.Person;
 import de.sb.toolbox.net.HttpCredentials;
 import de.sb.toolbox.net.RestJpaLifecycleProvider;
@@ -36,6 +39,13 @@ public interface Authenticator {
 		// password hash. If there is none, or if it fails the password hash check, then throw
 		// NotAuthorizedException("Basic"). Note that this exception type is a specialized Subclass
 		// of ClientErrorException that is capable of storing an authentication challenge.
+		
+		TypedQuery<Person> query = messengerManager.createQuery(
+											pql, Person.class);
+		Person resultPerson = query.getSingleResult();
+		if (resultPerson.getPasswordHash().equals(resultPerson.passwordHash(credentials.getPassword()))) {
+			return resultPerson;
+		}
 		throw new NotAuthorizedException("Basic");
 	}
 }
