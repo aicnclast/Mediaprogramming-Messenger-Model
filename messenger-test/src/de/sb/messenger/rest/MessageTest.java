@@ -46,8 +46,8 @@ public class MessageTest extends EntityTest {
 		
 		message = em.find(Message.class, id);
 		Assert.assertEquals(message.getBody(), "test");
-		Assert.assertEquals(message.getAuthor(), author);
-		Assert.assertEquals(message.getSubject(), subject);
+		Assert.assertEquals(message.getAuthorReference(), author.getIdentity());
+		Assert.assertEquals(message.getSubjectReference(), subject.getIdentity());
 		
 		em.close();
 	}

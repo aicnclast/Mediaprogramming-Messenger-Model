@@ -56,11 +56,18 @@ public class MessageService {
 		Message message = new Message(author, subject);
 		message.setBody(body);
 		messengerManager.persist(message);
-		messengerManager.getTransaction().commit();
+		try {
+			messengerManager.getTransaction().commit();
+		} finally { 
+			messengerManager.getTransaction().begin();
+		}
 		
 		//evict from 2nd-level cache?? 
-		messengerManager.refresh(author);
-		messengerManager.refresh(subject);
+		messengerManager.getEntityManagerFactory().getCache().evict(Person.class, author.getIdentity());
+		messengerManager.getEntityManagerFactory().getCache().evict(Person.class, subject.getIdentity());
+
+		//messengerManager.refresh(author);
+		//messengerManager.refresh(subject);
 		
 		final long id = message.getIdentity();
 		return id;
