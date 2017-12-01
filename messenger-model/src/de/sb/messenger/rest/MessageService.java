@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -50,10 +51,12 @@ public class MessageService {
 							@FormParam("authorReference") final long authorReference,
 							@FormParam("subjectReference") final long subjectReference) {
 		
-		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+		final Person requester = Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		
 		Person author =  messengerManager.find(Person.class, authorReference);
 		if (author == null) throw new ClientErrorException(NOT_FOUND);
+		
+		if (!requester.equals(author)) throw new NotAuthorizedException("Basic");  //richtige Exception?
 		
 		BaseEntity subject =  messengerManager.find(BaseEntity.class, subjectReference);
 		if (subject == null) throw new ClientErrorException(NOT_FOUND);

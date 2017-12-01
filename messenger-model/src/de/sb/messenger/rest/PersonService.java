@@ -88,7 +88,7 @@ public class PersonService{
 		if (result == null) throw new ClientErrorException(404);
 		//throw new NotFoundException();
 		
-		return result.toArray(new Person[result.size()]);
+		return result.toArray(new Person[0]);
 	}
 
 	@PUT
@@ -96,7 +96,9 @@ public class PersonService{
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public long updatePerson(@HeaderParam("Authorization") final String authentication, @Valid Person template,
 			@NotNull @HeaderParam("SetPassword") final String setPassword) {
+		
 		final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
+		
 		final Person requester = Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		if (requester.getGroup() != ADMIN) throw new ClientErrorException(FORBIDDEN);
 
@@ -121,8 +123,10 @@ public class PersonService{
 		try {
 			messengerManager.persist(person);
 			messengerManager.getTransaction().commit();
+			
 		} catch (final RollbackException exception) {
 			throw new ClientErrorException(CONFLICT);
+			
 		} finally {
 			messengerManager.getTransaction().begin();
 		}

@@ -58,8 +58,8 @@ public class EntityService {
 	@GET
 	@Path("{identity}")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public BaseEntity queryIdentity (/*@HeaderParam("Authorization") final String authentication, */@PathParam("identity") final long identity) {
-	//	Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+	public BaseEntity queryIdentity (@HeaderParam("Authorization") final String authentication, @PathParam("identity") final long identity) {
+	    Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 	    final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
 		final BaseEntity entity = messengerManager.find(BaseEntity.class, identity);
 		if (entity == null) throw new NotFoundException();

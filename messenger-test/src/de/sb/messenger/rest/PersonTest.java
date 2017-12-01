@@ -88,7 +88,7 @@ public class PersonTest extends EntityTest {
 		
 		this.getWasteBasket().add(id);
 		
-		em.clear();
+		em.clear(); //perosn will reload
 		
 		person = em.find(Person.class, id);
 		Assert.assertEquals(person.getName().getGiven(), "given");
@@ -101,7 +101,7 @@ public class PersonTest extends EntityTest {
 		person = em.find(Person.class, id);
 		person.getName().setFamily("family2");
 		
-		em.flush();
+		em.flush(); //will persist immediately
 		
 		try {
 			em.getTransaction().commit();

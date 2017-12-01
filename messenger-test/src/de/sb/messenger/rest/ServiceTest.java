@@ -23,6 +23,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import com.sun.net.httpserver.HttpServer;
 import de.sb.toolbox.Copyright;
+import de.sb.toolbox.net.HttpCredentials;
 import de.sb.toolbox.net.RestJpaLifecycleProvider;
 import de.sb.toolbox.net.RestResponseCodeProvider;
 
@@ -79,9 +80,11 @@ public class ServiceTest {
 	 * @param password the user password
 	 * @return the base target
 	 */
-	static public WebTarget newWebTarget(final String alias, final String password) {
+	static public WebTarget newWebTarget(/*final String alias, final String password*/ final String email, final String password) {
 		final ClientConfig configuration = new ClientConfig()
-			.register(HttpAuthenticationFeature.basic(alias, password))
+			.register(HttpAuthenticationFeature.basic(email,password))
+			.register(HttpCredentials.newBasicInstance(password))
+			//.register(Authenticator.authenticate(email,password))
 			.register(MoxyJsonFeature.class)
 			.register(MoxyXmlFeature.class)
 			.register(RestResponseCodeProvider.class)
