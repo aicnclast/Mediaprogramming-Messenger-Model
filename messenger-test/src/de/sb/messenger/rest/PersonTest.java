@@ -3,6 +3,8 @@ package de.sb.messenger.rest;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
@@ -37,8 +39,6 @@ public class PersonTest extends EntityTest {
 		entity.getAddress().setStreet(testString(63));
 
 		Assert.assertEquals(validator.validate(entity).size(), 0);
-
-		
 		
 		//Grenzwertig illegal
 		entity.setEmail(testString(124) + "@c.de");
@@ -54,8 +54,7 @@ public class PersonTest extends EntityTest {
 		entity.getAddress().setStreet(testString(64));
 		Assert.assertEquals(validator.validate(entity).size(), 6);
 
-		
-		
+
 		//illegal
 		entity.setEmail("ac.de");
 		Assert.assertEquals(validator.validate(entity).size(), 6);
@@ -63,8 +62,11 @@ public class PersonTest extends EntityTest {
 	
 	@Test
 	public void testLifeCycle(){
+		
 		EntityManager em = this.getEntityManagerFactory().createEntityManager();
+		
 		em.getTransaction().begin();
+		
 		Document avatar = em.find(Document.class, 1l);	
 		Person person = new Person(avatar);
 		person.getName().setGiven("given");
@@ -73,14 +75,19 @@ public class PersonTest extends EntityTest {
 		person.getAddress().setPostcode("12345");
 		person.getAddress().setStreet("street");
 		person.setEmail(System.currentTimeMillis() + "@test");
+		
+		
 		em.persist(person);
 		try {
 			em.getTransaction().commit();
 		} finally { 
 			em.getTransaction().begin();
 		}
+		
 		final long id = person.getIdentity(); 
+		
 		this.getWasteBasket().add(id);
+		
 		em.clear();
 		
 		person = em.find(Person.class, id);
@@ -93,7 +100,9 @@ public class PersonTest extends EntityTest {
 
 		person = em.find(Person.class, id);
 		person.getName().setFamily("family2");
+		
 		em.flush();
+		
 		try {
 			em.getTransaction().commit();
 		} finally { 
@@ -105,6 +114,7 @@ public class PersonTest extends EntityTest {
 		Assert.assertEquals(person.getName().getFamily(), "family2");
 
 		em.close();
+		
 	}
 	
 }

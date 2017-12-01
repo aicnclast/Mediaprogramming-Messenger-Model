@@ -23,7 +23,7 @@ import de.sb.messenger.persistence.*;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType
-@XmlSeeAlso(value = {Person.class, Document.class, Message.class})
+@XmlSeeAlso  (value = {Person.class, Document.class, Message.class})
 
 public class BaseEntity implements Comparable<BaseEntity>{
 	
@@ -38,7 +38,7 @@ public class BaseEntity implements Comparable<BaseEntity>{
 	private int version; // nicht modifizierbar
 	
 	@Column( nullable=false, insertable=true, updatable=false)
-	@XmlElement(required=true)
+	@XmlElement //(required=true)
 	private long creationTimestamp; // nicht modifizierbar
 	
 	@OneToMany(mappedBy ="subject", cascade= CascadeType.REMOVE) //Feldname 

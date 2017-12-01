@@ -15,6 +15,7 @@ import de.sb.toolbox.net.RestJpaLifecycleProvider;
  * Facade interface for HTTP authentication purposes.
  * TODO: Rename to "Authenticator" before use.
  */
+
 public interface Authenticator {
 
 	/**
@@ -43,7 +44,7 @@ public interface Authenticator {
 		TypedQuery<Person> query = messengerManager.createQuery(
 											pql, Person.class);
 		Person resultPerson = query.getSingleResult();
-		if (resultPerson.getPasswordHash().equals(resultPerson.passwordHash(credentials.getPassword()))) {
+		if (resultPerson.getPasswordHash().equals(Person.passwordHash(credentials.getPassword()))) {
 			return resultPerson;
 		}
 		throw new NotAuthorizedException("Basic");
