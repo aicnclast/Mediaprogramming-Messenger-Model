@@ -43,16 +43,14 @@ public interface Authenticator {
 		// password hash. If there is none, or if it fails the password hash check, then throw
 		// NotAuthorizedException("Basic"). Note that this exception type is a specialized Subclass
 		// of ClientErrorException that is capable of storing an authentication challenge.
+		if (credentials==null) throw new NullPointerException();
 		
-		// RestCredentials.newBasicInstance(credentials.getAuthentication());
+		 TypedQuery<Person> query = messengerManager.createQuery(pql, Person.class);
+		 Person requestor = query.getSingleResult(); //email is unique
 		
-		 TypedQuery<Person> query = messengerManager.createQuery(
-											pql, Person.class);
-		 Person resultPerson = query.getSingleResult(); //email is unique
-		
-		if (Person.passwordHash(credentials.getPassword()).equals(resultPerson.getPasswordHash()) 
-				&& resultPerson.getEmail().equals(credentials.getUsername())) {
-			return resultPerson;
+		if (Person.passwordHash(credentials.getPassword()).equals(requestor.getPasswordHash()) 
+				&& requestor.getEmail().equals(credentials.getUsername())) { //username = password?
+			return requestor;
 		}
 		
 		throw new NotAuthorizedException("Basic");

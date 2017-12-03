@@ -18,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import de.sb.toolbox.Copyright;
 import de.sb.toolbox.net.RestCredentials;
@@ -45,18 +46,18 @@ public class MessageService {
 	
 	@PUT
 	//@Path("messages")
-	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public long putMessage (	@HeaderParam("Authorization") final String authentication, 
+	@Produces(MediaType.TEXT_PLAIN) //nur für long
+	public long putMessage (@HeaderParam("Authorization") final String authentication, 
 							@Size(min=1, max=16777215)@FormParam("body") final String body,
-							@FormParam("authorReference") final long authorReference,
+							//@FormParam("authorReference") final long authorReference,
 							@FormParam("subjectReference") final long subjectReference) {
 		
 		final Person requester = Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		
-		Person author =  messengerManager.find(Person.class, authorReference);
+		Person author =  requester;
 		if (author == null) throw new ClientErrorException(NOT_FOUND);
 		
-		if (!requester.equals(author)) throw new NotAuthorizedException("Basic");  //richtige Exception?
+		//if (!requester.equals(author)) throw new NotAuthorizedException("Basic");  //richtige Exception?
 		
 		BaseEntity subject =  messengerManager.find(BaseEntity.class, subjectReference);
 		if (subject == null) throw new ClientErrorException(NOT_FOUND);
@@ -75,7 +76,7 @@ public class MessageService {
 		
 		//evict from 2nd-level cache?? 
 		messengerManager.getEntityManagerFactory().getCache().evict(Person.class, author.getIdentity());
-		messengerManager.getEntityManagerFactory().getCache().evict(Person.class, subject.getIdentity());
+		messengerManager.getEntityManagerFactory().getCache().evict(BaseEntity.class, subject.getIdentity());
 
 		//messengerManager.refresh(author);
 		//messengerManager.refresh(subject);

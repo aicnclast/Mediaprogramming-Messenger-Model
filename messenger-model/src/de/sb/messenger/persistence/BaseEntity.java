@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import de.sb.messenger.persistence.*;
@@ -23,7 +24,7 @@ import de.sb.messenger.persistence.*;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType
-@XmlSeeAlso  (value = {Person.class, Document.class, Message.class})
+@XmlSeeAlso  ({Person.class, Document.class, Message.class})
 
 public class BaseEntity implements Comparable<BaseEntity>{
 	
@@ -43,7 +44,7 @@ public class BaseEntity implements Comparable<BaseEntity>{
 	
 	@OneToMany(mappedBy ="subject", cascade= CascadeType.REMOVE) //Feldname 
 	@NotNull
-	@XmlElement
+	@XmlTransient
 	private final Set<Message> messagesCaused;
 	
 	

@@ -80,11 +80,10 @@ public class ServiceTest {
 	 * @param password the user password
 	 * @return the base target
 	 */
-	static public WebTarget newWebTarget(/*final String alias, final String password*/ final String email, final String password) {
+	static public WebTarget newWebTarget(final String email, final String password /* final HttpCredentials.Basic credentials*/) {
 		final ClientConfig configuration = new ClientConfig()
 			.register(HttpAuthenticationFeature.basic(email,password))
-			.register(HttpCredentials.newBasicInstance(password))
-			//.register(Authenticator.authenticate(email,password))
+			//.register(Authenticator.authenticate(credentials))
 			.register(MoxyJsonFeature.class)
 			.register(MoxyXmlFeature.class)
 			.register(RestResponseCodeProvider.class)
