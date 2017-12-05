@@ -37,7 +37,7 @@ import de.sb.toolbox.net.RestCredentials;
  * is calculated, and thereby gain access to the whole application with any user alias. In contrast,
  * using HTTPS in combination with basic authentication allows the server side to store (for
  * example) a strong SHA-256 hash of the password within the database, hash the transferred secret,
- * and use this hash value to authenticate a given user; an attacker who downloaded these hash
+ * and use this hash value to authenticate a given user; an attacker who has downloaded these hash
  * values cannot use them for anything within the application, because she/he cannot recalculate the
  * required password from it.<br />
  * <br />

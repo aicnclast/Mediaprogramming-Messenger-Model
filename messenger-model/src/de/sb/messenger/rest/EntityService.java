@@ -8,6 +8,8 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import java.util.Arrays;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.ws.rs.ClientErrorException;
@@ -22,6 +24,7 @@ import de.sb.messenger.persistence.BaseEntity;
 import de.sb.messenger.persistence.Message;
 import de.sb.messenger.persistence.Person;
 import de.sb.toolbox.Copyright;
+import de.sb.toolbox.net.HttpCredentials;
 import de.sb.toolbox.net.RestCredentials;
 import de.sb.toolbox.net.RestJpaLifecycleProvider;
 
@@ -56,9 +59,8 @@ public class EntityService {
 	@Path("{identity}")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public BaseEntity queryIdentity (@HeaderParam("Authorization") final String authentication, @PathParam("identity") final long identity) {
-		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
-
-		final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
+	    Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+	    final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
 		final BaseEntity entity = messengerManager.find(BaseEntity.class, identity);
 		if (entity == null) throw new NotFoundException();
 		return entity;
