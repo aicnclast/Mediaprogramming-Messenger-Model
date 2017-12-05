@@ -59,12 +59,12 @@ public void setBody(String body) {
 	this.body=body;
 }
 
-@XmlElement(name="authorReference")
+@XmlElement
 public long getAuthorReference() {
 	 return this.author == null ? 0 : this.author.getIdentity();
 }
 
-@XmlElement(name="subjectReference")
+@XmlElement
 public long getSubjectReference() {
 	 return this.subject == null ? 0 : this.subject.getIdentity();
 }
