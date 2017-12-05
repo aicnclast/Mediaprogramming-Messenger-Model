@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 
 @Entity
@@ -27,20 +25,17 @@ public class Document extends BaseEntity {
 	@NotNull
 	@Column(unique=true, nullable=false, updatable=false, insertable=true)
 	@Size(min=32, max=32)
-	@XmlElement
 	private byte[] contentHash; //
 	
 	@NotNull
 	@Column( nullable=false, updatable=false)
 	@Size(min=1, max=63)
 	@Pattern(regexp="^[a-z]+\\/[a-z\\.\\+\\-]+$")
-	@XmlElement
 	private String contentType; // modifizierbar
 	
 	@NotNull
 	@Column( nullable=false)
 	@Size(min=1, max=16777215)
-	@XmlTransient
 	private byte [] content; // modifizierbar 
 
 	@Size(min=32, max=32)

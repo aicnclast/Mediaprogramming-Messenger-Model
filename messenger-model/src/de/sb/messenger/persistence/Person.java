@@ -70,6 +70,7 @@ public class Person extends BaseEntity {
 	//@Basic(fetch=FetchType.LAZY)
 	@ManyToOne(optional=false)
 	@JoinColumn(name="avatarReference", nullable=false, insertable=true, updatable=true)	
+	@XmlElement
 	private Document avatar;  //(nicht) modifizierbar
 	
 	@NotNull
@@ -131,7 +132,7 @@ public void setPasswordHash(byte[] passwordHash) {
 		this.passwordHash = passwordHash;
 	}
 
-@XmlElement(name="avatarReference")
+@XmlElement
 public long getAvatarReference() {  
 	return this.avatar == null ? 0 : this.avatar.getIdentity();
 } 
@@ -173,8 +174,5 @@ public Set<Person> getPersonObserving() {
 	return peopleObserving;
 }
 
-public void setAvatar(Document avatar) {
-	this.avatar = avatar;
-}
 
 }
