@@ -35,7 +35,7 @@ import de.sb.toolbox.net.RestResponseCodeProvider;
  */
 @Copyright(year=2013, holders="Sascha Baumeister")
 
-public class ServiceTest extends ServiceTest {
+public class ServiceTest  {
 	static private final URI SERVICE_URI = URI.create("http://localhost:8001/services");
 	static private HttpServer HTTP_CONTAINER = null;
 

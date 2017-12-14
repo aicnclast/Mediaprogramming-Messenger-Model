@@ -162,6 +162,10 @@ public Document getAvatar() {
 	return avatar;
 }
 
+public void setAvatar(Document avatar) {
+	this.avatar = avatar;
+}
+
 public Set<Message> getMessageAuthored() {
 	return messageAuthored;
 }
