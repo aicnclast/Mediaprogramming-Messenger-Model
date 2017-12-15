@@ -28,7 +28,7 @@ import de.sb.messenger.persistence.*;
  */
 @Path("messages")
 @Copyright(year=2017, holders="Team 4")
-public class MessageService {
+public class MessageService extends ServiceTest{
 	final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
 
 	private Message getMessage(final long identity) {

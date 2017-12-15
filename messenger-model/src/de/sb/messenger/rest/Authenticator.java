@@ -48,7 +48,12 @@ public interface Authenticator {
 		 TypedQuery<Person> query = messengerManager.createQuery(pql, Person.class);
 		 query.setParameter("email", email);
 		 //try catch mit 401
-		 Person requestor = query.getSingleResult(); //email is unique
+		 Person requestor;
+		try {
+			requestor = query.getSingleResult();
+		} catch (Exception e) {
+			throw new javax.ws.rs.NotFoundException();
+		}
 		
 		if (Person.passwordHash(credentials.getPassword()).equals(requestor.getPasswordHash()) ) { //username = password?
 			return requestor;
