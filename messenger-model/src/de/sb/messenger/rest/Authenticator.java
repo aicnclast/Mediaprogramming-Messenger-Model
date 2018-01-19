@@ -1,5 +1,7 @@
 package de.sb.messenger.rest;
 
+import java.util.Arrays;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
@@ -47,15 +49,14 @@ public interface Authenticator {
 		
 		 TypedQuery<Person> query = messengerManager.createQuery(pql, Person.class);
 		 query.setParameter("email", email);
-		 //try catch mit 401
 		 Person requestor;
-		try {
-			requestor = query.getSingleResult();
-		} catch (Exception e) {
-			throw new javax.ws.rs.NotFoundException();
-		}
+		 try {
+			 requestor = query.getSingleResult();
+		 } catch (Exception e) {
+			 throw new javax.ws.rs.NotFoundException();
+		 }
 		
-		if (Person.passwordHash(credentials.getPassword()).equals(requestor.getPasswordHash()) ) { //username = password?
+		if (Arrays.equals(Person.passwordHash(credentials.getPassword()), requestor.getPasswordHash()) ) { //username = password?
 			return requestor;
 		}
 		

@@ -58,9 +58,9 @@ public class MessageService extends ServiceTest{
 		messengerManager.persist(message);
 		messengerManager.getTransaction().commit();
 		
-		//evict from 2nd-level cache?? 
-		messengerManager.refresh(author);
-		messengerManager.refresh(subject);
+		//evict from 2nd-level cache??
+		messengerManager.getEntityManagerFactory().getCache().evict(Person.class, author.getIdentity());
+		messengerManager.getEntityManagerFactory().getCache().evict(BaseEntity.class, subject.getIdentity());
 		
 		final long id = message.getIdentity();
 		return id;

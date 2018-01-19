@@ -38,7 +38,7 @@ import de.sb.toolbox.net.RestJpaLifecycleProvider;
  */
 @Path("entities")
 @Copyright(year=2013, holders="Sascha Baumeister")
-public class EntityService extends ServiceTest{
+public class EntityService{
 
 	/**
 	 * Returns the entity with the given identity.

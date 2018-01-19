@@ -144,6 +144,9 @@ public class PersonService extends ServiceTest {
 
 		if (insertMode) {
 			Document avatar = messengerManager.find(Document.class, 1l);
+//TODO: not found if null on every! find
+			if(avatar == null)
+				throw new ClientErrorException(NOT_FOUND);
 			person = new Person(avatar);
 		} else {
 			person = messengerManager.find(Person.class, template.getIdentity());
@@ -161,10 +164,8 @@ public class PersonService extends ServiceTest {
 		try {
 			messengerManager.persist(person);
 			messengerManager.getTransaction().commit();
-			
 		} catch (final RollbackException exception) {
 			throw new ClientErrorException(CONFLICT);
-			
 		} finally {
 			messengerManager.getTransaction().begin();
 		}
@@ -187,11 +188,11 @@ public class PersonService extends ServiceTest {
 	@GET
 	@Path("{identity}")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public Person getPersonByID( /*@HeaderParam("Authorization") final String authentication,*/
+	public Person getPersonByID( @HeaderParam("Authorization") final String authentication,
 			@PathParam("identity") final long id) {
 		//final EntityManagerFactory em = Persistence.createEntityManagerFactory("messenger");
 		EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
-	    //Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+	    Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		final Person person = messengerManager.find(Person.class, id);
 		if (person == null)	throw new NotFoundException();
 		return person;
@@ -280,7 +281,7 @@ public class PersonService extends ServiceTest {
 			@NotNull @FormParam("peopleObserved") final Set<Long> peopleObservedIds
 		) {
 
-		final Person requester = Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
 		final Person person = messengerManager.find(Person.class, id);
 
@@ -403,39 +404,36 @@ public class PersonService extends ServiceTest {
 		if(id != requester.getIdentity()) throw new NotAuthorizedException("Basic");
 		if (person == null) throw new NotFoundException(); 
 		
-		Document avatar = new Document();
+		final Document avatar;
 		if (avatarContent.length == 0) {
-			final Document defaultAvatar = messengerManager.find(Document.class, 1l);
-			person.setAvatar(defaultAvatar);
-			messengerManager.persist(defaultAvatar);
+			avatar = messengerManager.find(Document.class, 1l);
 		} else {
 			TypedQuery<Document> query = messengerManager.createQuery("SELECT a FROM Document a WHERE a.contentHash = :contentHash", Document.class);
 			query.setParameter("contentHash", Document.mediaHash(avatarContent));
 			List <Document> resultDocuments = query.getResultList(); //More than one person can have the same avatar
 
 			if (resultDocuments.size() == 0) {
+				avatar = new Document();
 				avatar.setContentType(avatarContentType);
 				avatar.setContent(avatarContent);
 				messengerManager.persist(avatar);
-//				try {
-//					messengerManager.getTransaction().commit();
-//				} finally {
-//					messengerManager.getTransaction().begin();	
-//				
+				try {
+					messengerManager.getTransaction().commit();
+				} finally {
+					messengerManager.getTransaction().begin();	
+				}
 			} else {
 			    avatar = resultDocuments.get(0);
-				person.setAvatar(avatar);
-				messengerManager.persist(avatar);
 			}
-			
-			try {
-				messengerManager.getTransaction().commit();
-			} catch (final RollbackException exception) {
-				throw new ClientErrorException(CONFLICT); // The request could not be completed due to a conflict 
-			} finally {
-				messengerManager.getTransaction().begin();	
-			}
-			person.setAvatar(avatar); //? 
+		}
+		person.setAvatar(avatar);
+		
+		try {
+			messengerManager.getTransaction().commit();
+		} catch (final RollbackException exception) {
+			throw new ClientErrorException(CONFLICT); // The request could not be completed due to a conflict 
+		} finally {
+			messengerManager.getTransaction().begin();	
 		}
 
 		return person.getAvatar().getIdentity();
