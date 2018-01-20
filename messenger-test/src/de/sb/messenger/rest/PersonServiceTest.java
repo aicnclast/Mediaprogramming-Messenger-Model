@@ -19,25 +19,16 @@ public class PersonServiceTest extends ServiceTest {
 	
 	@Test
 	public void testCriteriaQueries() {
-		WebTarget target = ServiceTest.newWebTarget("ines.bergmann@web.de", "ines");
-		Builder request = target.path("/people")
-				.queryParam("given", "Ines")
-				.request();
-		//JSON
-		Response response = request.accept(APPLICATION_JSON)
-				.get();
+		WebTarget target = newWebTarget("ines.bergmann@web.de", "ines")
+				.path("people").
+				queryParam("city", "Berlin");
+
+		Response response = target.request().get();
 		Assert.assertTrue(response.getStatus() == 200);
-		Person person = response.readEntity(Person.class);
-		Assert.assertEquals(person.getIdentity(), 2);
-		
-		//XML
-		response = request.accept(APPLICATION_XML)
-				.get();
-		Assert.assertTrue(response.getStatus() == 200);
-		person = response.readEntity(Person.class);
-		Assert.assertEquals(person.getIdentity(), 2);
+		Person[] person = response.readEntity(Person[].class);
+
+		Assert.assertEquals(person[0].getIdentity(), 2);
 	}
-	
 	
 	
 }

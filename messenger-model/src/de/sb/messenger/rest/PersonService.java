@@ -73,7 +73,7 @@ public class PersonService extends ServiceTest {
 
 	@GET
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public Collection <Person> getPersonByCriteria(
+	public Person[] getPersonByCriteria(
 			@HeaderParam("Authorization") final String authentication,
 			@Size(max=31) @QueryParam("familyName") final String family,
 			@Size(max=31) @QueryParam("givenName") final String given,
@@ -86,20 +86,20 @@ public class PersonService extends ServiceTest {
 			@QueryParam("resultOffset") int resultOffset,
 			@QueryParam("resultLength") int resultLength
 	) {
-
-		Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
+	    Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
 		
-		TypedQuery<Long> query = messengerManager.createQuery("SELECT p.identity FROM Person p WHERE"
-				 +":lowerCreationTimestamp is null OR p.creationTimeStamp >=:lowerCreationTimestamp AND"
-				 +":upperCreationTimestamp is null OR p.creationTimeStamp <=:upperCreationTimestamp AND"
-				+ ":email is null OR p.email =:email  AND" 
-				+ ":familyName is null OR p.familyName  =:familyName AND"
-				+ ":givenName  is null OR p.givenName =:givenName AND" 
-				+ ":street  is null OR p.street =:street AND"
-				+ ":city  is null OR p.city =:city AND"
-				+ ":postcode is null OR p.postcode =:postcode"
-				, Long.class);
+		String sql = "SELECT p.identity FROM Person p WHERE"
+				+ " (:lowerCreationTimestamp = 0 OR p.creationTimestamp >= :lowerCreationTimestamp) AND"
+				+ " (:upperCreationTimestamp = 0 OR p.creationTimestamp <= :upperCreationTimestamp) AND"
+				+ " (:email is null OR p.email = :email) AND" 
+				+ " (:familyName is null OR p.name.family = :familyName) AND"
+				+ " (:givenName is null OR p.name.given = :givenName) AND" 
+				+ " (:street is null OR p.address.street = :street) AND"
+				+ " (:city is null OR p.address.city = :city) AND"
+				+ " (:postcode is null OR p.address.postcode = :postcode)";
+		
+		Query query = messengerManager.createQuery(sql, Long.class);
 		
 		if(resultOffset > 0) query.setFirstResult(resultOffset);
 		if(resultLength > 0) query.setMaxResults(resultLength);
@@ -110,18 +110,25 @@ public class PersonService extends ServiceTest {
 		query.setParameter("city", city);
 		query.setParameter("postcode", postcode);
 		query.setParameter("email", email);
-		query.setParameter("lowerCreationTiestamp", lowerCreationTimestamp);
-		query.setParameter("upperCreationTiestamp", upperCreationTimestamp);
+		query.setParameter("lowerCreationTimestamp", lowerCreationTimestamp);
+		query.setParameter("upperCreationTimestamp", upperCreationTimestamp);
 	
 		List<Long> result = query.getResultList();
-		List<Person> people =new ArrayList<>();
 		
-		for(long id: result) {
-			Person p = messengerManager.find(Person.class, id);
-			if(p != null) people.add(p);
-		}
-		people.sort( Comparator.comparing(Person::getName).thenComparing(Person::getEmail));		
-		return people;
+        Person[] people = null;
+        ArrayList<Person> peopleList = new ArrayList<Person>();
+        for (int i = 0; i < result.size(); i++) {
+            final Person persistedPerson = messengerManager.find(Person.class, result.get(i));
+
+            if (persistedPerson != null) {
+                peopleList.add(persistedPerson);
+            }
+        }
+
+        people = peopleList.toArray(new Person[0]);
+        Arrays.sort(people);
+
+        return people;
 	}
 
 	@PUT
