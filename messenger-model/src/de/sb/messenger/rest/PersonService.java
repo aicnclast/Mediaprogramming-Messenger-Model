@@ -134,15 +134,13 @@ public class PersonService extends ServiceTest {
 	@PUT
 	@Produces((MediaType.TEXT_PLAIN))
 	@Consumes ({ APPLICATION_JSON, APPLICATION_XML })
-	
 	public long updatePerson(
 			@HeaderParam("Authorization") final String authentication,
 			@NotNull @Valid Person template,
 			@Size(min=4)@NotNull @HeaderParam("Set-password") final String setPassword
-		) {
-		
-		final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
+		) {		
 		final Person requester = Authenticator.authenticate(RestCredentials.newBasicInstance(authentication));
+		final EntityManager messengerManager = RestJpaLifecycleProvider.entityManager("messenger");
 		if (requester.getIdentity() != template.getIdentity() && requester.getGroup() != ADMIN) 
 			throw new ClientErrorException(FORBIDDEN);
 
