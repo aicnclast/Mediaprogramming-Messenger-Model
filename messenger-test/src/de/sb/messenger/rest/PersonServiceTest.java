@@ -78,15 +78,15 @@ public class PersonServiceTest extends ServiceTest {
 		template.getAddress().setStreet("street");
 		template.setEmail(System.currentTimeMillis() + "@test");
 		
-/*		Entity<Person> entity = Entity.json(template);
+		Entity<Person> entity = Entity.json(template);
         target = newWebTarget("ines.bergmann@web.de", "ines")
-        		.path("people/");
+        		.path("people");
         Response putResponse = target.request()
         		.header("Set-password", "123456")
         		.put(entity);
 		Assert.assertTrue(putResponse.getStatus() == 200);
         
-*/		
+		
 		
     }
 	

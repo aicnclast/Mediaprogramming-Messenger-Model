@@ -149,7 +149,6 @@ public class PersonService extends ServiceTest {
 
 		if (insertMode) {
 			Document avatar = messengerManager.find(Document.class, 1l);
-//TODO: not found if null on every! find
 			if(avatar == null)
 				throw new ClientErrorException(NOT_FOUND);
 			person = new Person(avatar);

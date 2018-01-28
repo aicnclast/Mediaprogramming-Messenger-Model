@@ -83,11 +83,7 @@ public class ServiceTest  {
 		final ClientConfig configuration = new ClientConfig()
 			.register(HttpAuthenticationFeature.basic(alias, password))
 			.register(MoxyJsonFeature.class)
-			.register(MoxyXmlFeature.class)
-			.register(RestResponseCodeProvider.class)
-			.register(EntityFilteringFeature.class)
-			.register(new RestJpaLifecycleProvider("messenger"));
-
+			.register(MoxyXmlFeature.class);
 		return ClientBuilder.newClient(configuration).target(SERVICE_URI);
 	}
 
@@ -102,8 +98,8 @@ public class ServiceTest  {
 			.packages(ServiceTest.class.getPackage().toString())
 			.register(MoxyJsonFeature.class)	// edit "network.http.accept.default" in Firefox's "about:config"
 			.register(MoxyXmlFeature.class)		// to make "application/json" preferable to "application/xml"
-			.register(EntityFilteringFeature.class)
-			.register(new RestJpaLifecycleProvider("messenger"));
+			.register(new RestJpaLifecycleProvider("messenger"))
+			.register(RestResponseCodeProvider.class);
 		HTTP_CONTAINER = JdkHttpServerFactory.createHttpServer(SERVICE_URI, configuration);
 		Logger.getGlobal().log(INFO, "Embedded HTTP container running on service address {0}.", SERVICE_URI);
 	}
