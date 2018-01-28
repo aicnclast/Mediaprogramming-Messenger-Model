@@ -57,19 +57,16 @@ this.de_sb_messenger = this.de_sb_messenger || {};
 	PeopleController.prototype.query = function () {
 		// TODO
     const inputElements = document.querySelectorAll("section.candidates input");
-    let email = inputElements[0].value.trim();
-    let givenname = inputElements[1].value.trim();
-    let familyname = inputElements[2].value.trim();
-    let street = inputElements[3].value.trim();
-    let city = inputElements[4].value.trim();
     const header = {"Accept": "application/json"};
     let path = "/services/people?";
+		const params = [];
     inputElements.forEach((input, index) => {
     	let param = input.value.trim();
     	if(!!param){
-    		path += QUERY_PARAMETER_NAMES[index] + "=" + param + "&";
+    		params.push(QUERY_PARAMETER_NAMES[index] + "=" + param);
 			}
 		});
+    path += params.join("&");
     AJAX.invoke(path, "GET", header, null, null, request => {
       if (request.status === 200) {
 				var response = JSON.parse(request.responseText);
@@ -79,7 +76,9 @@ this.de_sb_messenger = this.de_sb_messenger || {};
 				});
 
       	this.refreshAvatarSlider(document.querySelector("section.candidates .image-slider"), identities, this.toggleObservation);
-			}
+			} else {
+	      this.displayStatus(request.status, request.statusText);
+	    }
 		});
 	}
 
@@ -91,6 +90,27 @@ this.de_sb_messenger = this.de_sb_messenger || {};
 	 */
 	PeopleController.prototype.toggleObservation = function (personIdentity) {
     // TODO
+		const user = de_sb_messenger.APPLICATION.sessionUser;
+		const observed = user.observedReferences.slice(0); // slice(0) returns a clone
+		const index = observed.indexOf(personIdentity);
+		(index >= 0) ? observed.splice(index, 1) : observed.push(personIdentity);
+		const data = []
+    observed.forEach(id => {
+      data.push(encodeURIComponent(`peopleObserved=${id}`));
+		});
+
+    const header = {"Content-Type": "application/x-www-form-urlencoded"};
+    const body = data.join('&');
+    let path = `/services/people/${user.identity}/peopleObserved`;
+
+    AJAX.invoke(path, "PUT", header, body, null, request => {
+      if (request.status === 204) {
+      	user.observedReferences = observed;
+				this.refreshAvatarSlider(document.querySelector("section.people-observed .image-slider"), observed, this.toggleObservation);
+			} else {
+  	    this.displayStatus(request.status, request.statusText);
+   	 	}
+		});
   }
 
 } ());
