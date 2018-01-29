@@ -48,8 +48,45 @@ this.de_sb_messenger = this.de_sb_messenger || {};
 	/**
 	 * Displays the root messages.
 	 */
-	MessagesController.prototype.displayRootMessages = function () {
+	MessagesController.prototype.displayRootMessages = async function (parentId = null) {
 		// TODO
+		const sessionUser = APPLICATION.sessionUser;
+		const subjectIdentities = [sessionUser.identity].concat(sessionUser.observedReferences);
+
+		const messages = [];
+		const options = {method: "GET", headers: {"Accept": "application/json"}, credentials: "include"};
+		for (let identity of subjectIdentities) { //await wont't work with forEach
+			let path = `/services/entities/${identity}/messagesCaused`;
+			let request = await fetch(path, options);
+			if (request.status == 200) {
+				let response = await request.json();
+				messages.push(...response); //map response to push it into messages instead of reassigning a new array with concat
+			} else {
+				this.displayStatus(request.status, request.statusText);
+			}
+		}
+    messages.sort(function(a,b) {return (b.creationTimestamp - a.creationTimestamp);}); // absteigendes Erzeugungsdatum
+
+		//Add Elements to View:
+		const messageList = document.querySelector("section.messages ul");
+    while (messageList.lastChild) messageList.removeChild(messageList.lastChild); //clear list
+    messages.forEach(message => {
+      const messageElement = document.querySelector("#message-output-template").content.cloneNode(true).firstElementChild;
+
+
+      this.entityCache.resolve(message.authorReference, author => {
+        messageElement.querySelector("img").src = `/services/people/${author.identity}/avatar`;
+        let time = new Date(message.creationTimestamp);
+        messageElement.querySelector("output").innerText = `${author.name.given} ${author.name.family} (${time.toLocaleDateString()}, ${time.toLocaleTimeString()})`;
+        messageElement.querySelector("div:nth-of-type(2) output").innerText = message.body;
+        messageElement.querySelector("a").addEventListener("click", this.displayRootMessages.bind(this));
+
+        messageElement.dataset.identity = message.identity; //make it easier to find
+        messageList.appendChild(messageElement);
+      });
+    });
+
+    console.log(messages);
 	}
 
 
