@@ -87,6 +87,7 @@ this.de_sb_messenger = this.de_sb_messenger || {};
         messageElement.querySelector("output").innerText = `${author.name.given} ${author.name.family} (${time.toLocaleDateString()}, ${time.toLocaleTimeString()})`;
         messageElement.querySelector("div:nth-of-type(2) output").innerText = message.body;
         messageElement.querySelector("a").addEventListener("click", () => {this.displayRootMessages(message.identity);});
+        messageElement.querySelector("a:nth-of-type(2)").addEventListener("click", () => {this.displayMessageEditor(messageElement, message.identity);});
 
         messageElement.dataset.identity = message.identity; //make it easier to find
         messageList.appendChild(messageElement);
@@ -104,7 +105,23 @@ this.de_sb_messenger = this.de_sb_messenger || {};
 	 */
 	MessagesController.prototype.displayMessageEditor = function (parentElement, subjectIdentity) {
 		// TODO
-	}
+    while (document.querySelector(".message-input")) document.querySelector(".message-input").remove(); //remove existing editors (not supported in IE), added message-input as class in the template
+    const sessionUser = APPLICATION.sessionUser.identity;
+
+    this.entityCache.resolve(sessionUser, user => {
+      parentElement.className += "extended";
+      const messageEditor = document.querySelector("#message-input-template").content.cloneNode(true).firstElementChild;
+
+      messageEditor.querySelector("img").src = `/services/people/${user.identity}/avatar`;
+      let time = new Date(); //default is now
+      messageEditor.querySelector("output").innerText = `${user.name.given} ${user.name.family} (${time.toLocaleDateString()}, ${time.toLocaleTimeString()})`;
+			//subjectIdentity und Autor werden als parameter an persist übergeben, statt sie im dom einzubinden.
+      messageEditor.querySelector("button").addEventListener("click", () => {this.persistMessage(messageEditor, subjectIdentity);});
+
+      const parentList = parentElement.querySelector("ul");
+      parentList.insertBefore(messageEditor, parentList.firstChild); //insert at the top if replies are shown;
+    });
+  }
 
 
 	/**
@@ -115,5 +132,24 @@ this.de_sb_messenger = this.de_sb_messenger || {};
 	 */
 	MessagesController.prototype.persistMessage = function (messageElement, subjectIdentity) {
 		// TODO
-	}
+
+    const text = messageElement.querySelector("textarea").value.trim();
+    const data = [];
+    data.push(encodeURIComponent(`authorReference=${APPLICATION.sessionUser.identity}`));
+    data.push(encodeURIComponent(`subjectReference=${subjectIdentity}`));
+    data.push(encodeURIComponent(`body=${text}`));
+
+    const header = {"Content-Type": "application/x-www-form-urlencoded"};
+    const body = data.join('&');
+    let path = `/services/messages`;
+
+    AJAX.invoke(path, "PUT", header, body, null, request => {
+      if (request.status === 204) {
+      	this.displayRootMessages();
+        this.displayStatus("OK", "Message sent");
+      } else {
+        this.displayStatus(request.status, request.statusText);
+      }
+    });
+  }
 } ());

@@ -38,7 +38,6 @@ public class MessageService extends ServiceTest{
 	}
 	
 	@PUT
-	@Path("messages")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public long putMessage (	@HeaderParam("Authorization") final String authentication, 
 							@FormParam("body") final String body,
@@ -69,7 +68,7 @@ public class MessageService extends ServiceTest{
 	
 	
 	@GET
-	@Path("messages/{identity}")
+	@Path("{identity}")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public Message queryMessage (@HeaderParam("Authorization") final String authentication, 
 								@PathParam("identity") final long identity) {
@@ -78,7 +77,7 @@ public class MessageService extends ServiceTest{
 	}
 
 	@GET
-	@Path("messages/{identity}/author")
+	@Path("{identity}/author")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public Person queryMessageAuthor (@HeaderParam("Authorization") final String authentication,
 									 @PathParam("identity") final long identity) {
@@ -89,7 +88,7 @@ public class MessageService extends ServiceTest{
 	}
 	
 	@GET
-	@Path("messages/{identity}/subject")
+	@Path("{identity}/subject")
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	public BaseEntity queryMessageSubject (@HeaderParam("Authorization") final String authentication, 
 										  @PathParam("identity") final long identity) {
