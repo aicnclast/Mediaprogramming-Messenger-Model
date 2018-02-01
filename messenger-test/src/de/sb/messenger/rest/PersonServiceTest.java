@@ -35,11 +35,9 @@ public class PersonServiceTest extends ServiceTest {
 		Response response = target.request().get();
 		Assert.assertTrue(response.getStatus() == 200);
 		Person[] person = response.readEntity(Person[].class);
-
 		Assert.assertEquals(person[0].getIdentity(), 2);
 	}
-	
-	
+
 	
 
     @Test
@@ -130,7 +128,7 @@ public class PersonServiceTest extends ServiceTest {
    
 
     @Test
-    public void testPersonRelationQueries() {
+    public void testPeopleRelationQueries() {
     	//GET people/{id}/peopleObserving
         WebTarget target = newWebTarget("ines.bergmann@web.de", "ines")
         			.path("people/2/peopleObserving");
